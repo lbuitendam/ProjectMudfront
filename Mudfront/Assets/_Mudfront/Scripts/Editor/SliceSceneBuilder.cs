@@ -145,8 +145,8 @@ namespace Mudfront.EditorTools
             Place("SM_Kit_Wall_4m", new Vector3(0, 0, 2), 180, parent, true);
             Place("SM_Kit_WallWindow_4m", new Vector3(-2, 0, 0), 90, parent, true);
             Place("SM_Kit_WallWindow_4m", new Vector3(2, 0, 0), -90, parent, true);
-            Place("SM_Kit_RoofSlope_4m", new Vector3(-1.2f, 3.2f, 0), 0, parent, true);
-            Place("SM_Kit_RoofSlope_4m", new Vector3(1.2f, 3.2f, 0), 180, parent, true);
+            Place("SM_Kit_RoofSlope_4m", new Vector3(-1.95f, 3.2f, 0), 0, parent, true);
+            Place("SM_Kit_RoofSlope_4m", new Vector3(1.95f, 3.2f, 0), 180, parent, true);
         }
 
         // Routes are data for the validator (and later for bots). Points at ground level.
@@ -244,7 +244,7 @@ namespace Mudfront.EditorTools
             // the CharacterController capsule doubles as the hitbox (raycasts hit it)
             var model = Instance("SM_Char_Trooper_Placeholder", go.transform);
             FaceForward(model, 1.66f, 1.78f, front: true);
-            TintTeam(model, team);
+            model.AddComponent<TeamTint>().Apply(); // runtime tint (property blocks are not serialized)
             return go;
         }
 

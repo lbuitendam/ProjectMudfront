@@ -1,88 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<test-run id="2" testcasecount="10" result="Passed" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-18 13:30:36Z" end-time="2026-11-18 13:30:47Z" duration="11,4037594">
-  <test-suite type="TestSuite" id="1018" name="Mudfront" fullname="Mudfront" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-11-18 13:30:36Z" end-time="2026-11-18 13:30:47Z" duration="11.403759" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+<test-run id="2" testcasecount="11" result="Passed" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-18 13:51:58Z" end-time="2026-11-18 13:52:10Z" duration="11,4192572">
+  <test-suite type="TestSuite" id="1019" name="Mudfront" fullname="Mudfront" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-11-18 13:51:58Z" end-time="2026-11-18 13:52:10Z" duration="11.419257" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
     <properties>
       <property name="platform" value="PlayMode" />
     </properties>
-    <test-suite type="Assembly" id="1012" name="Mudfront.Tests.dll" fullname="G:/dev/ProjectMudfront/Mudfront/Library/ScriptAssemblies/Mudfront.Tests.dll" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-11-18 13:30:36Z" end-time="2026-11-18 13:30:47Z" duration="11.396958" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <test-suite type="Assembly" id="1013" name="Mudfront.Tests.dll" fullname="G:/dev/ProjectMudfront/Mudfront/Library/ScriptAssemblies/Mudfront.Tests.dll" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-11-18 13:51:58Z" end-time="2026-11-18 13:52:10Z" duration="11.411592" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
       <properties>
-        <property name="_PID" value="36696" />
+        <property name="_PID" value="32232" />
         <property name="_APPDOMAIN" value="Unity Child Domain" />
         <property name="platform" value="PlayMode" />
         <property name="EditorOnly" value="False" />
       </properties>
-      <test-suite type="TestSuite" id="1013" name="Mudfront" fullname="Mudfront" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-11-18 13:30:36Z" end-time="2026-11-18 13:30:47Z" duration="11.396410" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <test-suite type="TestSuite" id="1014" name="Mudfront" fullname="Mudfront" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-11-18 13:51:58Z" end-time="2026-11-18 13:52:10Z" duration="11.410744" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
         <properties />
-        <test-suite type="TestSuite" id="1014" name="Tests" fullname="Mudfront.Tests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-11-18 13:30:36Z" end-time="2026-11-18 13:30:47Z" duration="11.396136" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <test-suite type="TestSuite" id="1015" name="Tests" fullname="Mudfront.Tests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-11-18 13:51:58Z" end-time="2026-11-18 13:52:10Z" duration="11.410382" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
           <properties />
-          <test-suite type="TestFixture" id="1001" name="SliceGameplayTests" fullname="Mudfront.Tests.SliceGameplayTests" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-11-18 13:30:36Z" end-time="2026-11-18 13:30:47Z" duration="11.395170" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <test-suite type="TestFixture" id="1001" name="SliceGameplayTests" fullname="Mudfront.Tests.SliceGameplayTests" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-11-18 13:51:58Z" end-time="2026-11-18 13:52:10Z" duration="11.409255" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
             <properties />
-            <test-case id="1003" name="Capture_ContestedZone_DoesNotChangeOwner" fullname="Mudfront.Tests.SliceGameplayTests.Capture_ContestedZone_DoesNotChangeOwner" methodname="Capture_ContestedZone_DoesNotChangeOwner" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="1480501067" result="Passed" start-time="2026-11-18 13:30:36Z" end-time="2026-11-18 13:30:37Z" duration="1.017380" asserts="0">
+            <test-case id="1003" name="Capture_ContestedZone_DoesNotChangeOwner" fullname="Mudfront.Tests.SliceGameplayTests.Capture_ContestedZone_DoesNotChangeOwner" methodname="Capture_ContestedZone_DoesNotChangeOwner" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="762556215" result="Passed" start-time="2026-11-18 13:51:58Z" end-time="2026-11-18 13:51:59Z" duration="1.022822" asserts="0">
               <properties>
                 <property name="_JOINTYPE" value="UnityCombinatorial" />
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1004" name="Capture_OutsideRadius_DoesNotCount" fullname="Mudfront.Tests.SliceGameplayTests.Capture_OutsideRadius_DoesNotCount" methodname="Capture_OutsideRadius_DoesNotCount" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="238563933" result="Passed" start-time="2026-11-18 13:30:37Z" end-time="2026-11-18 13:30:38Z" duration="0.801331" asserts="0">
+            <test-case id="1004" name="Capture_OutsideRadius_DoesNotCount" fullname="Mudfront.Tests.SliceGameplayTests.Capture_OutsideRadius_DoesNotCount" methodname="Capture_OutsideRadius_DoesNotCount" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="1334457154" result="Passed" start-time="2026-11-18 13:51:59Z" end-time="2026-11-18 13:52:00Z" duration="0.801477" asserts="0">
               <properties>
                 <property name="_JOINTYPE" value="UnityCombinatorial" />
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1002" name="Capture_SingleTeamTakesZone_AndScores" fullname="Mudfront.Tests.SliceGameplayTests.Capture_SingleTeamTakesZone_AndScores" methodname="Capture_SingleTeamTakesZone_AndScores" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="2121371540" result="Passed" start-time="2026-11-18 13:30:38Z" end-time="2026-11-18 13:30:39Z" duration="1.303877" asserts="0">
+            <test-case id="1002" name="Capture_SingleTeamTakesZone_AndScores" fullname="Mudfront.Tests.SliceGameplayTests.Capture_SingleTeamTakesZone_AndScores" methodname="Capture_SingleTeamTakesZone_AndScores" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="375401569" result="Passed" start-time="2026-11-18 13:52:00Z" end-time="2026-11-18 13:52:01Z" duration="1.304236" asserts="0">
               <properties>
                 <property name="_JOINTYPE" value="UnityCombinatorial" />
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1010" name="DoorClearance_ControllerWalksThroughDoorWall" fullname="Mudfront.Tests.SliceGameplayTests.DoorClearance_ControllerWalksThroughDoorWall" methodname="DoorClearance_ControllerWalksThroughDoorWall" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="78733274" result="Passed" start-time="2026-11-18 13:30:39Z" end-time="2026-11-18 13:30:41Z" duration="1.601370" asserts="0">
+            <test-case id="1011" name="DoorClearance_ControllerWalksThroughDoorWall" fullname="Mudfront.Tests.SliceGameplayTests.DoorClearance_ControllerWalksThroughDoorWall" methodname="DoorClearance_ControllerWalksThroughDoorWall" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="1169275580" result="Passed" start-time="2026-11-18 13:52:01Z" end-time="2026-11-18 13:52:03Z" duration="1.601368" asserts="0">
               <properties>
                 <property name="_JOINTYPE" value="UnityCombinatorial" />
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1011" name="DoorClearance_SolidWallBlocks" fullname="Mudfront.Tests.SliceGameplayTests.DoorClearance_SolidWallBlocks" methodname="DoorClearance_SolidWallBlocks" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="1870423356" result="Passed" start-time="2026-11-18 13:30:41Z" end-time="2026-11-18 13:30:42Z" duration="1.601554" asserts="0">
+            <test-case id="1012" name="DoorClearance_SolidWallBlocks" fullname="Mudfront.Tests.SliceGameplayTests.DoorClearance_SolidWallBlocks" methodname="DoorClearance_SolidWallBlocks" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="1152064438" result="Passed" start-time="2026-11-18 13:52:03Z" end-time="2026-11-18 13:52:05Z" duration="1.601309" asserts="0">
               <properties>
                 <property name="_JOINTYPE" value="UnityCombinatorial" />
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1009" name="Movement_RunsAtRunSpeedOnFlatGround" fullname="Mudfront.Tests.SliceGameplayTests.Movement_RunsAtRunSpeedOnFlatGround" methodname="Movement_RunsAtRunSpeedOnFlatGround" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="1712237022" result="Passed" start-time="2026-11-18 13:30:42Z" end-time="2026-11-18 13:30:43Z" duration="1.304539" asserts="0">
+            <test-case id="1009" name="Movement_RunsAtRunSpeedOnFlatGround" fullname="Mudfront.Tests.SliceGameplayTests.Movement_RunsAtRunSpeedOnFlatGround" methodname="Movement_RunsAtRunSpeedOnFlatGround" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="272438660" result="Passed" start-time="2026-11-18 13:52:05Z" end-time="2026-11-18 13:52:06Z" duration="1.304783" asserts="0">
               <properties>
                 <property name="_JOINTYPE" value="UnityCombinatorial" />
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
-              <output><![CDATA[[MoveTest] speed 5,50 m/s over 7202 frames, dt≈0,000
+              <output><![CDATA[[MoveTest] speed 5,50 m/s over 8790 frames, dt≈0,000
 ]]></output>
             </test-case>
-            <test-case id="1006" name="Respawn_DeadPlayerReturnsAtTeamSpawn" fullname="Mudfront.Tests.SliceGameplayTests.Respawn_DeadPlayerReturnsAtTeamSpawn" methodname="Respawn_DeadPlayerReturnsAtTeamSpawn" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="676179696" result="Passed" start-time="2026-11-18 13:30:43Z" end-time="2026-11-18 13:30:44Z" duration="0.601301" asserts="0">
+            <test-case id="1006" name="Respawn_DeadPlayerReturnsAtTeamSpawn" fullname="Mudfront.Tests.SliceGameplayTests.Respawn_DeadPlayerReturnsAtTeamSpawn" methodname="Respawn_DeadPlayerReturnsAtTeamSpawn" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="1045908003" result="Passed" start-time="2026-11-18 13:52:06Z" end-time="2026-11-18 13:52:06Z" duration="0.601397" asserts="0">
               <properties>
                 <property name="_JOINTYPE" value="UnityCombinatorial" />
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1005" name="Shooting_DamagesEnemy_NotTeammate" fullname="Mudfront.Tests.SliceGameplayTests.Shooting_DamagesEnemy_NotTeammate" methodname="Shooting_DamagesEnemy_NotTeammate" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="200668713" result="Passed" start-time="2026-11-18 13:30:44Z" end-time="2026-11-18 13:30:44Z" duration="0.211707" asserts="0">
+            <test-case id="1005" name="Shooting_DamagesEnemy_NotTeammate" fullname="Mudfront.Tests.SliceGameplayTests.Shooting_DamagesEnemy_NotTeammate" methodname="Shooting_DamagesEnemy_NotTeammate" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="859541711" result="Passed" start-time="2026-11-18 13:52:06Z" end-time="2026-11-18 13:52:07Z" duration="0.217877" asserts="0">
               <properties>
                 <property name="_JOINTYPE" value="UnityCombinatorial" />
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1008" name="Vehicle_DestroyedEjectsDriver_ThenRespawns" fullname="Mudfront.Tests.SliceGameplayTests.Vehicle_DestroyedEjectsDriver_ThenRespawns" methodname="Vehicle_DestroyedEjectsDriver_ThenRespawns" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="99921909" result="Passed" start-time="2026-11-18 13:30:44Z" end-time="2026-11-18 13:30:46Z" duration="1.421112" asserts="0">
+            <test-case id="1010" name="TeamTint_EnemyModelGetsTeamColour" fullname="Mudfront.Tests.SliceGameplayTests.TeamTint_EnemyModelGetsTeamColour" methodname="TeamTint_EnemyModelGetsTeamColour" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="1825803718" result="Passed" start-time="2026-11-18 13:52:07Z" end-time="2026-11-18 13:52:07Z" duration="0.004528" asserts="0">
               <properties>
                 <property name="_JOINTYPE" value="UnityCombinatorial" />
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1007" name="Vehicle_EnterDriveExit" fullname="Mudfront.Tests.SliceGameplayTests.Vehicle_EnterDriveExit" methodname="Vehicle_EnterDriveExit" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="1114547957" result="Passed" start-time="2026-11-18 13:30:46Z" end-time="2026-11-18 13:30:47Z" duration="1.518741" asserts="0">
+            <test-case id="1008" name="Vehicle_DestroyedEjectsDriver_ThenRespawns" fullname="Mudfront.Tests.SliceGameplayTests.Vehicle_DestroyedEjectsDriver_ThenRespawns" methodname="Vehicle_DestroyedEjectsDriver_ThenRespawns" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="258014351" result="Passed" start-time="2026-11-18 13:52:07Z" end-time="2026-11-18 13:52:08Z" duration="1.416832" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1007" name="Vehicle_EnterDriveExit" fullname="Mudfront.Tests.SliceGameplayTests.Vehicle_EnterDriveExit" methodname="Vehicle_EnterDriveExit" classname="Mudfront.Tests.SliceGameplayTests" runstate="Runnable" seed="1209527509" result="Passed" start-time="2026-11-18 13:52:08Z" end-time="2026-11-18 13:52:10Z" duration="1.518392" asserts="0">
               <properties>
                 <property name="_JOINTYPE" value="UnityCombinatorial" />
                 <property name="retryIteration" value="0" />

@@ -196,6 +196,27 @@ namespace Mudfront.Tests
 
 #if UNITY_EDITOR
         [UnityTest]
+        public IEnumerator TeamTint_EnemyModelGetsTeamColour()
+        {
+            var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Mudfront/Art/Models/SM_Char_Trooper_Placeholder.fbx");
+            var t = Trooper(1, new Vector3(0, 0.1f, 0), false);
+            var model = Object.Instantiate(asset, t.transform);
+            model.AddComponent<TeamTint>();
+            yield return null;
+            bool found = false;
+            foreach (var r in model.GetComponentsInChildren<Renderer>())
+                for (int i = 0; i < r.sharedMaterials.Length; i++)
+                    if (r.sharedMaterials[i].name.Contains("tidewatch_blue_main"))
+                    {
+                        var mpb = new MaterialPropertyBlock(); r.GetPropertyBlock(mpb, i);
+                        var c = mpb.GetColor("_BaseColor");
+                        Assert.Greater(c.r, c.b, "team 1 (Ironclads red) tint applied");
+                        found = true;
+                    }
+            Assert.IsTrue(found, "model has faction material");
+        }
+
+        [UnityTest]
         public IEnumerator DoorClearance_ControllerWalksThroughDoorWall()
         {
             var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Mudfront/Art/Models/SM_Kit_WallDoor_4m.fbx");

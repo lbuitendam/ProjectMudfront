@@ -1,18 +1,18 @@
 # Slice verification report
-Generated 2026-11-18 14:25 by `SliceSceneBuilder.Validate` (Unity 6000.3.28f1).
+Generated 2026-11-18 14:51 by `SliceSceneBuilder.Validate` (Unity 6000.3.28f1).
 
 ## 1. Asset imports
-- PASS `SM_Char_Trooper_Placeholder` size 1,25×1,85×0,75 m, 6 materials, pivot→bottom +0,00, collider added in code
-- PASS `SM_Cover_BarricadeHigh_4m` size 4,10×2,17×1,47 m, 2 materials, pivot→bottom +0,00, collider mesh
-- PASS `SM_Cover_CrateStack` size 2,22×1,79×1,17 m, 2 materials, pivot→bottom +0,00, collider mesh
-- PASS `SM_Cover_SandbagsLow_4m` size 4,05×1,06×0,79 m, 1 materials, pivot→bottom +0,00, collider mesh
-- PASS `SM_Kit_CornerPost` size 0,75×3,41×0,75 m, 2 materials, pivot→bottom +0,00, collider mesh
-- PASS `SM_Kit_Floor_4m` size 4,00×0,22×4,00 m, 2 materials, pivot→bottom +0,00, collider mesh
-- PASS `SM_Kit_RoofSlope_4m` size 2,64×2,02×4,25 m, 2 materials, pivot→bottom +0,00, collider mesh
-- PASS `SM_Kit_Wall_4m` size 4,05×3,23×0,58 m, 3 materials, pivot→bottom +0,00, collider mesh
-- PASS `SM_Kit_WallDoor_4m` size 4,05×3,23×0,58 m, 3 materials, pivot→bottom +0,00, collider mesh
-- PASS `SM_Kit_WallWindow_4m` size 4,06×3,23×0,59 m, 3 materials, pivot→bottom +0,00, collider mesh
-- PASS `SM_Veh_Mudskipper` size 2,38×2,09×3,68 m, 6 materials, pivot→bottom +0,00, collider added in code
+- PASS `SM_Char_Trooper_Placeholder` size 0,93×1,96×0,55 m, 10 materials, pivot→bottom +0,00, collider added in code
+- PASS `SM_Cover_BarricadeHigh_4m` size 4,27×2,05×1,45 m, 5 materials, pivot→bottom +0,00, collider mesh
+- PASS `SM_Cover_CrateStack` size 2,20×1,73×1,23 m, 6 materials, pivot→bottom +0,00, collider mesh
+- PASS `SM_Cover_SandbagsLow_4m` size 4,29×1,10×0,78 m, 5 materials, pivot→bottom +0,00, collider mesh
+- PASS `SM_Kit_CornerPost` size 0,78×3,47×0,54 m, 4 materials, pivot→bottom +0,00, collider mesh
+- PASS `SM_Kit_Floor_4m` size 4,01×0,20×4,02 m, 5 materials, pivot→bottom +0,00, collider mesh
+- PASS `SM_Kit_RoofSlope_4m` size 2,66×1,93×4,42 m, 5 materials, pivot→bottom +0,00, collider mesh
+- PASS `SM_Kit_Wall_4m` size 4,05×3,22×0,57 m, 7 materials, pivot→bottom +0,00, collider mesh
+- PASS `SM_Kit_WallDoor_4m` size 4,04×3,20×0,60 m, 7 materials, pivot→bottom +0,00, collider mesh
+- PASS `SM_Kit_WallWindow_4m` size 4,05×3,21×0,79 m, 10 materials, pivot→bottom +0,00, collider mesh
+- PASS `SM_Veh_Mudskipper` size 2,35×2,37×3,98 m, 16 materials, pivot→bottom +0,00, collider added in code
 
 ## 2. Controller clearance (capsule r=0.4, h=1.8)
 - PASS `SM_Kit_WallDoor_4m`: capsule passes (expected pass)

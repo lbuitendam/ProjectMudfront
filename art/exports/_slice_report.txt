@@ -1,20 +1,20 @@
-SM_Char_Trooper_Placeholder.fbx      size  1.25 x  0.75 x  1.85 m   pivot->min z -0.00
-SM_Cover_BarricadeHigh_4m.fbx        size  4.10 x  1.47 x  2.17 m   pivot->min z -0.00
-SM_Cover_CrateStack.fbx              size  2.22 x  1.17 x  1.79 m   pivot->min z -0.00
-SM_Cover_SandbagsLow_4m.fbx          size  4.05 x  0.79 x  1.06 m   pivot->min z -0.00
-SM_Kit_CornerPost.fbx                size  0.75 x  0.75 x  3.41 m   pivot->min z -0.00
-SM_Kit_Floor_4m.fbx                  size  4.00 x  4.00 x  0.22 m   pivot->min z -0.00
-SM_Kit_RoofSlope_4m.fbx              size  2.64 x  4.25 x  2.02 m   pivot->min z -0.00
-SM_Kit_WallDoor_4m.fbx               size  4.05 x  0.58 x  3.23 m   pivot->min z -0.00
-    clear width at z=0.3: 1.59 m
+SM_Char_Trooper_Placeholder.fbx      size  0.93 x  0.55 x  1.96 m   pivot->min z -0.00
+SM_Cover_BarricadeHigh_4m.fbx        size  4.27 x  1.45 x  2.05 m   pivot->min z -0.00
+SM_Cover_CrateStack.fbx              size  2.20 x  1.23 x  1.73 m   pivot->min z -0.00
+SM_Cover_SandbagsLow_4m.fbx          size  4.29 x  0.78 x  1.30 m   pivot->min z -0.00
+SM_Kit_CornerPost.fbx                size  0.78 x  0.54 x  3.47 m   pivot->min z -0.00
+SM_Kit_Floor_4m.fbx                  size  4.01 x  4.02 x  0.20 m   pivot->min z -0.00
+SM_Kit_RoofSlope_4m.fbx              size  2.66 x  4.42 x  1.93 m   pivot->min z -0.00
+SM_Kit_WallDoor_4m.fbx               size  4.04 x  0.60 x  3.20 m   pivot->min z -0.00
+    clear width at z=0.3: 1.61 m
     clear width at z=1.0: 1.59 m
     clear width at z=1.8: 1.59 m
     clear width at z=2.4: 1.59 m
-    clear height (centre): 2.62 m
-SM_Kit_WallWindow_4m.fbx             size  4.06 x  0.59 x  3.23 m   pivot->min z -0.00
-    clear width at z=1.2: 1.38 m
-    clear width at z=1.6: 1.38 m
-    clear width at z=2.0: 1.38 m
+    clear height (centre): 2.61 m
+SM_Kit_WallWindow_4m.fbx             size  4.05 x  0.79 x  3.21 m   pivot->min z -0.00
+    clear width at z=1.2: 0.66 m
+    clear width at z=1.6: 0.00 m
+    clear width at z=2.0: 0.68 m
     clear height (centre): 0.51 m
-SM_Kit_Wall_4m.fbx                   size  4.05 x  0.58 x  3.23 m   pivot->min z -0.00
-SM_Veh_Mudskipper.fbx                size  2.38 x  3.68 x  2.09 m   pivot->min z -0.00
+SM_Kit_Wall_4m.fbx                   size  4.05 x  0.57 x  3.22 m   pivot->min z -0.00
+SM_Veh_Mudskipper.fbx                size  2.35 x  3.98 x  2.37 m   pivot->min z -0.00

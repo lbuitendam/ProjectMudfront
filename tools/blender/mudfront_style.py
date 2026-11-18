@@ -132,9 +132,11 @@ def finish(model_name):
     o = bpy.context.active_object
     o.name = model_name
     bpy.ops.object.shade_flat()
-    # origin at bottom centre
+    # bake the first part's rotation/scale so the model's axes are the authoring axes
+    bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+    # origin = authoring origin (x=0, y=0) at the lowest point; independent of part order
     zs = [(o.matrix_world @ v.co).z for v in o.data.vertices]
-    bpy.context.scene.cursor.location = (o.location.x, o.location.y, min(zs))
+    bpy.context.scene.cursor.location = (0.0, 0.0, min(zs))
     bpy.ops.object.origin_set(type="ORIGIN_CURSOR")
     o.location = (0, 0, 0)
     os.makedirs(EXPORT_DIR, exist_ok=True)
@@ -146,4 +148,67 @@ def finish(model_name):
     )
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(EXPORT_DIR, model_name + ".blend"))
     print("Exported", path)
+    return o
+
+
+# ---------------------------------------------------------------- v1 art direction helpers
+# Crisp, tapered, painted-variation shapes (docs/ART_DIRECTION.md)
+SHADES = {-1: 0.80, 0: 1.0, 1: 1.13}
+
+
+def shaded(path, shade=None):
+    """Material variant: dark(-1)/base(0)/light(1). None = random pick (painted look)."""
+    if shade is None:
+        shade = random.choice((-1, 0, 0, 1))
+    if shade == 0:
+        return mat(path)
+    name = "M_" + path.replace(".", "_") + ("_dk" if shade < 0 else "_lt")
+    if name in _mats:
+        return _mats[name]
+    m = bpy.data.materials.get(name) or bpy.data.materials.new(name)
+    m.use_nodes = True
+    k = SHADES[shade]
+    base = hex_to_linear(color(path))
+    c = (min(1, base[0] * k), min(1, base[1] * k), min(1, base[2] * k), 1.0)
+    bsdf = m.node_tree.nodes.get("Principled BSDF")
+    bsdf.inputs["Base Color"].default_value = c
+    bsdf.inputs["Roughness"].default_value = 0.92
+    m.diffuse_color = c
+    _mats[name] = m
+    return m
+
+
+def tbox(name, size, loc, material, taper=(1.0, 1.0), shear=(0.0, 0.0), rot=(0, 0, 0),
+         bevel=0.015, shade=None, jitter=0.0):
+    """Tapered/sheared box. taper = top (x,y) scale; shear = top (x,y) offset in m. Crisp 1-segment chamfer."""
+    sx, sy, sz = size
+    bm = bmesh.new()
+    pts = []
+    for z, (tx, ty), (ox, oy) in ((-sz / 2, (1, 1), (0, 0)), (sz / 2, taper, shear)):
+        for x, y in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
+            pts.append(bm.verts.new((x * sx / 2 * tx + ox + random.uniform(-jitter, jitter),
+                                     y * sy / 2 * ty + oy + random.uniform(-jitter, jitter), z)))
+    f = lambda *i: bm.faces.new([pts[j] for j in i])
+    f(0, 3, 2, 1); f(4, 5, 6, 7); f(0, 1, 5, 4); f(1, 2, 6, 5); f(2, 3, 7, 6); f(3, 0, 4, 7)
+    bm.normal_update()
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me); bm.free()
+    o = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(o)
+    o.location = loc
+    o.rotation_euler = rot
+    if bevel:
+        b = o.modifiers.new("Bevel", "BEVEL"); b.width = bevel; b.segments = 1; b.limit_method = "ANGLE"
+    o.data.materials.append(shaded(material, shade))
+    return o
+
+
+def prism(name, radius, depth, loc, material, sides=6, taper=1.0, rot=(0, 0, 0), bevel=0.01, shade=None):
+    """Low-sided cylinder/cone (crisp facets)."""
+    bpy.ops.mesh.primitive_cone_add(vertices=sides, radius1=radius, radius2=radius * taper, depth=depth, location=loc, rotation=rot)
+    o = bpy.context.active_object
+    o.name = name
+    if bevel:
+        b = o.modifiers.new("Bevel", "BEVEL"); b.width = bevel; b.segments = 1; b.limit_method = "ANGLE"
+    o.data.materials.append(shaded(material, shade))
     return o
