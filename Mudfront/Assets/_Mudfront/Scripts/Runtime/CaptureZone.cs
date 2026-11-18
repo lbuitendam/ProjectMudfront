@@ -32,6 +32,14 @@ namespace Mudfront
 
         void Update() => Tick(Time.deltaTime);
 
+        /// <summary>Move the zone to a new spot and make it neutral again.</summary>
+        public void Relocate(Vector3 position, float radius)
+        {
+            transform.position = position;
+            Radius = radius;
+            Owner = -1; CapturingTeam = -1; Progress = 0f; Contested = false;
+        }
+
         public void Tick(float dt)
         {
             _present.Clear();

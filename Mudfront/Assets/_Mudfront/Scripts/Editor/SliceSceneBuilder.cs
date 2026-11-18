@@ -19,9 +19,9 @@ namespace Mudfront.EditorTools
         const string Models = "Assets/_Mudfront/Art/Models/";
         const string ScenePath = "Assets/_Mudfront/Scenes/Slice_Test.unity";
         const string MatFolder = "Assets/_Mudfront/Art/Materials";
-        static string ReportDir => Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "docs", "verification"));
+        internal static string ReportDir => Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "docs", "verification"));
 
-        static Transform _root;
+        internal static Transform _root;
 
         // ------------------------------------------------------------------ build
         [MenuItem("Mudfront/Build Slice Scene")]
@@ -70,7 +70,7 @@ namespace Mudfront.EditorTools
             Debug.Log("[Mudfront] Slice scene built: " + ScenePath);
         }
 
-        static void Lighting()
+        internal static void Lighting()
         {
             var sun = new GameObject("Sun").AddComponent<Light>();
             sun.transform.SetParent(_root);
@@ -93,7 +93,7 @@ namespace Mudfront.EditorTools
             RenderSettings.skybox = null;
         }
 
-        static void Courtyard()
+        internal static void Courtyard()
         {
             var parent = Group("Objective_Courtyard");
             string W = "SM_Kit_Wall_4m", D = "SM_Kit_WallDoor_4m", N = "SM_Kit_WallWindow_4m";
@@ -117,7 +117,7 @@ namespace Mudfront.EditorTools
             Place("SM_Cover_SandbagsLow_4m", new Vector3(3, 0, 6.5f), -5, parent);
         }
 
-        static void Tower(Vector3 c)
+        internal static void Tower(Vector3 c)
         {
             var parent = Group("Landmark_Tower");
             for (int floor = 0; floor < 3; floor++)
@@ -137,7 +137,7 @@ namespace Mudfront.EditorTools
             Block("Flag", c + new Vector3(1.1f, 9.6f + 5.2f, 0), new Vector3(2.2f, 1.3f, 0.08f), "#F2C94C", false, parent);
         }
 
-        static void Hut(Vector3 c, float yaw)
+        internal static void Hut(Vector3 c, float yaw)
         {
             var parent = Group("Hut");
             parent.position = c; parent.rotation = Quaternion.Euler(0, yaw, 0);
@@ -150,7 +150,7 @@ namespace Mudfront.EditorTools
         }
 
         // Routes are data for the validator (and later for bots). Points at ground level.
-        static readonly Dictionary<string, Vector3[]> RouteDefs = new Dictionary<string, Vector3[]>
+        internal static readonly Dictionary<string, Vector3[]> RouteDefs = new Dictionary<string, Vector3[]>
         {
             { "Route_Infantry_West", new[] { new Vector3(-3, 0, -60), new Vector3(-14, 0, -52), new Vector3(-17, 0, -44), new Vector3(-22, 0, -32),
                                              new Vector3(-22, 0, -12), new Vector3(-16, 0, -6), new Vector3(-12, 0, -6), new Vector3(-4, 0, -2) } },
@@ -159,7 +159,7 @@ namespace Mudfront.EditorTools
             { "Route_Vehicle_Lane",  new[] { new Vector3(0, 0, -60), new Vector3(0, 0, -14), new Vector3(0, 0, -6) } },
         };
 
-        static void Routes()
+        internal static void Routes()
         {
             var parent = Group("Routes");
             foreach (var kv in RouteDefs)
@@ -172,7 +172,7 @@ namespace Mudfront.EditorTools
             }
         }
 
-        static void Gameplay()
+        internal static void Gameplay()
         {
             var parent = Group("Gameplay");
             new GameObject("MatchManager").AddComponent<MatchManager>().transform.SetParent(parent);
@@ -229,7 +229,7 @@ namespace Mudfront.EditorTools
             hud.Player = ctrl; hud.Zone = zone; hud.transform.SetParent(parent);
         }
 
-        static GameObject MakeTrooper(string name, int team, Vector3 pos, float yaw, Transform parent)
+        internal static GameObject MakeTrooper(string name, int team, Vector3 pos, float yaw, Transform parent)
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent);
@@ -246,7 +246,7 @@ namespace Mudfront.EditorTools
             return go;
         }
 
-        static void MakeVehicle(Vector3 pos, float yaw, Transform parent)
+        internal static void MakeVehicle(Vector3 pos, float yaw, Transform parent)
         {
             var go = new GameObject("Vehicle_Mudskipper");
             go.transform.SetParent(parent);
@@ -268,12 +268,12 @@ namespace Mudfront.EditorTools
         }
 
         // ------------------------------------------------------------------ helpers
-        static Transform Group(string name)
+        internal static Transform Group(string name)
         {
             var t = new GameObject(name).transform; t.SetParent(_root); return t;
         }
 
-        static GameObject Instance(string model, Transform parent)
+        internal static GameObject Instance(string model, Transform parent)
         {
             var asset = AssetDatabase.LoadAssetAtPath<GameObject>(Models + model + ".fbx");
             if (asset == null) { Debug.LogError("[Mudfront] Missing model " + model); return new GameObject(model + "_MISSING"); }
@@ -282,7 +282,7 @@ namespace Mudfront.EditorTools
             return go;
         }
 
-        static GameObject Place(string model, Vector3 pos, float yaw, Transform parent = null, bool local = false)
+        internal static GameObject Place(string model, Vector3 pos, float yaw, Transform parent = null, bool local = false)
         {
             var go = Instance(model, parent != null ? parent : _root);
             if (local) { go.transform.localPosition = pos; go.transform.localRotation = Quaternion.Euler(0, yaw, 0); }
@@ -293,7 +293,7 @@ namespace Mudfront.EditorTools
         }
 
         /// <summary>Rotates the model 180° if the identifying feature (between heights y0..y1) is on the wrong side.</summary>
-        static void FaceForward(GameObject model, float y0, float y1, bool front)
+        internal static void FaceForward(GameObject model, float y0, float y1, bool front)
         {
             float sum = 0; int n = 0;
             foreach (var mf in model.GetComponentsInChildren<MeshFilter>())
@@ -307,7 +307,7 @@ namespace Mudfront.EditorTools
             if (featureAtPlusZ != front) model.transform.localRotation = Quaternion.Euler(0, 180, 0) * model.transform.localRotation;
         }
 
-        static void TintTeam(GameObject model, int team)
+        internal static void TintTeam(GameObject model, int team)
         {
             var col = TeamColors.Get(team);
             foreach (var r in model.GetComponentsInChildren<Renderer>())
@@ -324,7 +324,7 @@ namespace Mudfront.EditorTools
             }
         }
 
-        static Bounds LocalBounds(GameObject go)
+        internal static Bounds LocalBounds(GameObject go)
         {
             var rs = go.GetComponentsInChildren<Renderer>();
             var b = new Bounds(go.transform.InverseTransformPoint(rs[0].bounds.center), Vector3.zero);
@@ -335,7 +335,7 @@ namespace Mudfront.EditorTools
             return b;
         }
 
-        static Material Mat(string hex)
+        internal static Material Mat(string hex)
         {
             Directory.CreateDirectory(MatFolder);
             string path = $"{MatFolder}/MAT_{hex.TrimStart('#')}.mat";
@@ -348,7 +348,7 @@ namespace Mudfront.EditorTools
             return m;
         }
 
-        static GameObject Block(string name, Vector3 pos, Vector3 size, string hex, bool collider, Transform parent = null, bool noCollider = false)
+        internal static GameObject Block(string name, Vector3 pos, Vector3 size, string hex, bool collider, Transform parent = null, bool noCollider = false)
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
             go.name = name;
@@ -360,13 +360,13 @@ namespace Mudfront.EditorTools
             return go;
         }
 
-        static void Strip(string name, Vector3 pos, Vector3 size, float yaw, string hex)
+        internal static void Strip(string name, Vector3 pos, Vector3 size, float yaw, string hex)
         {
             var go = Block(name, pos + Vector3.up * 0.015f, new Vector3(size.x, 0.03f, size.z), hex, false);
             go.transform.rotation = Quaternion.Euler(0, yaw, 0);
         }
 
-        static void Hill(Vector3 pos, Vector3 size, string hex)
+        internal static void Hill(Vector3 pos, Vector3 size, string hex)
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             go.name = "Hill"; go.transform.SetParent(_root);
@@ -377,7 +377,7 @@ namespace Mudfront.EditorTools
             go.isStatic = true;
         }
 
-        static void Disc(string name, Vector3 localPos, float diameter, string hex, Transform parent)
+        internal static void Disc(string name, Vector3 localPos, float diameter, string hex, Transform parent)
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             go.name = name; go.transform.SetParent(parent, false);
@@ -387,7 +387,7 @@ namespace Mudfront.EditorTools
             Object.DestroyImmediate(go.GetComponent<Collider>());
         }
 
-        static Color Hex(string hex) { ColorUtility.TryParseHtmlString(hex, out var c); return c; }
+        internal static Color Hex(string hex) { ColorUtility.TryParseHtmlString(hex, out var c); return c; }
 
         // ------------------------------------------------------------------ validate
         [MenuItem("Mudfront/Validate Slice")]
@@ -479,14 +479,14 @@ namespace Mudfront.EditorTools
             return fails;
         }
 
-        static float Lum(Color c)
+        internal static float Lum(Color c)
         {
             float f(float x) => x <= 0.03928f ? x / 12.92f : Mathf.Pow((x + 0.055f) / 1.055f, 2.4f);
             return 0.2126f * f(c.r) + 0.7152f * f(c.g) + 0.0722f * f(c.b);
         }
-        static float Contrast(Color a, Color b) { float la = Lum(a) + 0.05f, lb = Lum(b) + 0.05f; return Mathf.Max(la, lb) / Mathf.Min(la, lb); }
+        internal static float Contrast(Color a, Color b) { float la = Lum(a) + 0.05f, lb = Lum(b) + 0.05f; return Mathf.Max(la, lb) / Mathf.Min(la, lb); }
 
-        static void Screenshots()
+        internal static void Screenshots()
         {
             var camGo = GameObject.Find("Main Camera");
             if (camGo == null) return;
