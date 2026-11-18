@@ -34,6 +34,8 @@ namespace Mudfront
         void Awake()
         {
             _rb = GetComponent<Rigidbody>();
+            var slick = new PhysicsMaterial("VehicleBody") { dynamicFriction = 0f, staticFriction = 0f, frictionCombine = PhysicsMaterialCombine.Minimum };
+            foreach (var c in GetComponents<Collider>()) if (c.sharedMaterial == null) c.sharedMaterial = slick;
             _health = GetComponent<Health>();
             _spawnPos = transform.position;
             _spawnRot = transform.rotation;

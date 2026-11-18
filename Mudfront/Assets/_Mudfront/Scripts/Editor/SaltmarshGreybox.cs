@@ -48,12 +48,12 @@ namespace Mudfront.EditorTools
 
         internal static readonly Dictionary<string, Vector2[]> Routes = new Dictionary<string, Vector2[]>
         {
-            { "Tidewatch→Net Sheds (quay)",        new[] { new Vector2(10, -185), new Vector2(40, -150), new Vector2(60, -124) } },
+            { "Tidewatch→Net Sheds (quay)",        new[] { new Vector2(10, -185), new Vector2(40, -150), new Vector2(60, -118) } },
             { "Tidewatch→Marsh (boardwalk)",       new[] { new Vector2(10, -185), new Vector2(0, -130), new Vector2(-10, -60), new Vector2(0, -8) } },
-            { "Tidewatch→Marsh (mudflat flank)",   new[] { new Vector2(10, -185), new Vector2(-45, -140), new Vector2(-70, -66), new Vector2(-30, -30), new Vector2(-6, -6) } },
+            { "Tidewatch→Marsh (mudflat flank)",   new[] { new Vector2(10, -185), new Vector2(-45, -140), new Vector2(-92, -75), new Vector2(-95, -45), new Vector2(-60, -30), new Vector2(-30, -20), new Vector2(-6, -6) } },
             { "Ironclads→Beacon Mill (cliff path)", new[] { new Vector2(200, 115), new Vector2(160, 95), new Vector2(116, 74) } },
             { "Ironclads→Marsh (cliff descent)",   new[] { new Vector2(200, 115), new Vector2(150, 40), new Vector2(90, 15), new Vector2(40, 5), new Vector2(8, 2) } },
-            { "Muddogs→Dune Battery (trench)",     new[] { new Vector2(-195, 72), new Vector2(-150, 70), new Vector2(-116, 62) } },
+            { "Muddogs→Dune Battery (trench)",     new[] { new Vector2(-195, 72), new Vector2(-150, 70), new Vector2(-120, 72), new Vector2(-110, 66), new Vector2(-110, 63) } },
             { "Muddogs→Marsh (dune trail)",        new[] { new Vector2(-195, 72), new Vector2(-140, 30), new Vector2(-80, 10), new Vector2(-30, 5), new Vector2(-8, 1) } },
         };
 
@@ -243,13 +243,13 @@ namespace Mudfront.EditorTools
         {
             var g = B.Group(name);
             var p = OnGround(c);
-            var pad = B.Block("HQ_Pad", p + Vector3.up * 0.1f, new Vector3(36, 0.4f, 30), "#C8A877", true, g);
+            var pad = B.Block("HQ_Pad", p + Vector3.up * 0.05f, new Vector3(36, 0.1f, 30), "#C8A877", false, g, true); // visual only, terrain is the ground
             pad.transform.rotation = Quaternion.Euler(0, yaw, 0);
             var rot = Quaternion.Euler(0, yaw, 0);
             // a couple of kit walls as the HQ silhouette
             for (int i = -2; i <= 2; i++)
-                if (i != 0) B.Place("SM_Kit_Wall_4m", p + rot * new Vector3(i * 4, 0.3f, 14), yaw + 180, g);
-            B.Block("HQ_Banner", p + rot * new Vector3(0, 6, 14), new Vector3(3, 4, 0.2f), ColorUtility.ToHtmlStringRGB(TeamColors.Get(team)), false, g);
+                if (i != 0) B.Place("SM_Kit_Wall_4m", p + rot * new Vector3(i * 4, 0f, -16), yaw, g); // back wall, away from the map
+            B.Block("HQ_Banner", p + rot * new Vector3(0, 6, -16), new Vector3(3, 4, 0.2f), ColorUtility.ToHtmlStringRGB(TeamColors.Get(team)), false, g);
             for (int i = 0; i < 3; i++)
             {
                 var s = new GameObject($"Spawn_T{team}_{i}"); s.transform.SetParent(g);
@@ -451,6 +451,7 @@ namespace Mudfront.EditorTools
                         {
                             if (h.collider is TerrainCollider || h.collider.GetComponentInParent<TeamMember>() || h.collider.GetComponentInParent<Vehicle>() || h.collider.name.StartsWith("Road")) continue;
                             blocked++;
+                            if (blocked <= 4) sb.AppendLine($"  - hit `{h.collider.transform.parent?.name}/{h.collider.name}` near ({a.x:0},{a.z:0})");
                         }
                     }
                 }

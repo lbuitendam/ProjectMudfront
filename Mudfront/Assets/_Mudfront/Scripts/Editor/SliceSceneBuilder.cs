@@ -152,10 +152,12 @@ namespace Mudfront.EditorTools
         // Routes are data for the validator (and later for bots). Points at ground level.
         internal static readonly Dictionary<string, Vector3[]> RouteDefs = new Dictionary<string, Vector3[]>
         {
-            { "Route_Infantry_West", new[] { new Vector3(-3, 0, -60), new Vector3(-14, 0, -52), new Vector3(-17, 0, -44), new Vector3(-22, 0, -32),
-                                             new Vector3(-22, 0, -12), new Vector3(-16, 0, -6), new Vector3(-12, 0, -6), new Vector3(-4, 0, -2) } },
-            { "Route_Infantry_East", new[] { new Vector3(3, 0, -60), new Vector3(15, 0, -52), new Vector3(23, 0, -43), new Vector3(21, 0, -32),
-                                             new Vector3(26, 0, -24), new Vector3(20, 0, -9), new Vector3(16, 0, -2), new Vector3(12, 0, -2), new Vector3(4, 0, 0) } },
+            // west: hut lane, enters the courtyard through the west door (x=-12, z=-2)
+            { "Route_Infantry_West", new[] { new Vector3(-3, 0, -60), new Vector3(-14, 0, -52), new Vector3(-17.5f, 0, -45), new Vector3(-17.5f, 0, -16),
+                                             new Vector3(-15, 0, -9), new Vector3(-16, 0, -2), new Vector3(-12, 0, -2), new Vector3(-4, 0, -2) } },
+            // east: flank outside the barricade line, enters through the east door (x=12, z=2)
+            { "Route_Infantry_East", new[] { new Vector3(3, 0, -60), new Vector3(14, 0, -55), new Vector3(27, 0, -48), new Vector3(28, 0, -30),
+                                             new Vector3(28, 0, -14), new Vector3(20, 0, 2), new Vector3(12, 0, 2), new Vector3(4, 0, 2) } },
             { "Route_Vehicle_Lane",  new[] { new Vector3(0, 0, -60), new Vector3(0, 0, -14), new Vector3(0, 0, -6) } },
         };
 

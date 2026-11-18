@@ -31,6 +31,8 @@ namespace Mudfront
         void Awake()
         {
             _cc = GetComponent<CharacterController>();
+            // default 0.001 m drops every step at very high frame rates (seen at ~10k fps in batch tests)
+            _cc.minMoveDistance = 0f;
             Yaw = transform.eulerAngles.y;
         }
 

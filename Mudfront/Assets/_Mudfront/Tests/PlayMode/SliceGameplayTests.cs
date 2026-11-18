@@ -179,13 +179,29 @@ namespace Mudfront.Tests
             Assert.Less(Vector3.Distance(carGo.transform.position, new Vector3(0, 0.1f, 0)), 0.2f, "back at its spawn");
         }
 
+        [UnityTest]
+        public IEnumerator Movement_RunsAtRunSpeedOnFlatGround()
+        {
+            var p = Trooper(0, new Vector3(0, 0.1f, -3)).GetComponent<ThirdPersonController>();
+            p.Yaw = 0;
+            yield return new WaitForSeconds(0.3f); // settle on the ground
+            p.MoveInput = new Vector2(0, 1);
+            float z0 = p.transform.position.z, t0 = Time.time;
+            int frames = 0;
+            while (Time.time - t0 < 1f) { frames++; yield return null; }
+            float speed = (p.transform.position.z - z0) / (Time.time - t0);
+            Debug.Log($"[MoveTest] speed {speed:0.00} m/s over {frames} frames, dt≈{(Time.time - t0) / frames:0.000}");
+            Assert.AreEqual(p.RunSpeed, speed, 0.6f, "run speed on flat ground");
+        }
+
 #if UNITY_EDITOR
         [UnityTest]
         public IEnumerator DoorClearance_ControllerWalksThroughDoorWall()
         {
             var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Mudfront/Art/Models/SM_Kit_WallDoor_4m.fbx");
             Assert.IsNotNull(asset, "door wall imported");
-            var wall = Object.Instantiate(asset, new Vector3(0, 0, 0), Quaternion.identity, _world.transform);
+            var wall = Object.Instantiate(asset, _world.transform);
+            wall.transform.position = Vector3.zero;
             Assert.IsNotNull(wall.GetComponentInChildren<MeshCollider>(), "door wall has collider");
             var p = Trooper(0, new Vector3(0, 0.1f, -3)).GetComponent<ThirdPersonController>();
             p.Yaw = 0;
@@ -198,7 +214,7 @@ namespace Mudfront.Tests
         public IEnumerator DoorClearance_SolidWallBlocks()
         {
             var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Mudfront/Art/Models/SM_Kit_Wall_4m.fbx");
-            Object.Instantiate(asset, Vector3.zero, Quaternion.identity, _world.transform);
+            Object.Instantiate(asset, _world.transform).transform.position = Vector3.zero;
             var p = Trooper(0, new Vector3(0, 0.1f, -3)).GetComponent<ThirdPersonController>();
             p.Yaw = 0;
             p.MoveInput = new Vector2(0, 1);

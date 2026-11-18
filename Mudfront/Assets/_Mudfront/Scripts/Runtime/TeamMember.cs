@@ -11,9 +11,9 @@ namespace Mudfront
         public int TeamId;
         Health _health;
 
-        public bool IsAlive => isActiveAndEnabled && (_health == null || !_health.IsDead);
+        public bool IsAlive => isActiveAndEnabled && (Health == null || !Health.IsDead);
+        Health Health => _health != null ? _health : (_health = GetComponent<Health>());
 
-        void Awake() => _health = GetComponent<Health>();
         void OnEnable() { if (!All.Contains(this)) All.Add(this); }
         void OnDisable() => All.Remove(this);
     }
