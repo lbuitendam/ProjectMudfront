@@ -22,7 +22,8 @@ G:\dev\ProjectMudfront\
 
 ## 3. Status (update at the end of every session)
 - **Last update:** 2026-11-18
-- **Phase:** 0 – Setup
-- **Done:** palette (`art/palette/`), Blender style helpers + 5 test-model script, gitignore/LFS, design decisions, GDD, roadmap, tasks, reference notes
-- **Next:** [YOU] finish installing Unity 6.3 LTS + Blender, create URP project in `Mudfront\`. Then run `blender -b -P tools/blender/build_test_models.py` (scripts written, not yet run/tested).
-- **Open questions:** final faction names; servers (dedicated vs player-hosted)
+- **Phase:** 2–3 (offline prototype + first map grey-box)
+- **Done:** test slice (Slice_Test) + Map 01 Saltmarsh Point grey-box, built and validated in batch mode; 10/10 play mode tests pass (capture/contest/score, shooting, respawn, vehicle enter/drive/exit/destroy/respawn, door clearance, run speed). Reports + screenshots: docs/verification/.
+- **Rebuild/verify (Unity closed):** `Unity.exe -batchmode -projectPath Mudfront -executeMethod Mudfront.EditorTools.SaltmarshGreybox.BuildAndValidate` (also `SliceSceneBuilder.BuildAndValidate`); tests: `-runTests -testPlatform PlayMode`. In the editor: menu **Mudfront**.
+- **Next:** art direction pass (models read as "Roblox"); grey-box polish (marsh/mud colours, water channels, cover on long routes); multiplayer library (Fish-Net) not installed yet.
+- **Open questions:** final faction names; servers; Muddogs green has weak contrast on grass (1.26:1).
