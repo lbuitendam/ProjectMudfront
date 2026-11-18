@@ -1,9 +1,9 @@
-﻿# Tasks â€“ Project Mudfront
+# Tasks – Project Mudfront
 
-Legend: **[FREE]** = suitable for a free/cheap model Â· **[CLAUDE/GPT]** = strong model Â· **[YOU]** = manual (install, click, test)
-Status: `[ ]` todo Â· `[~]` busy Â· `[x]` done. Work top-down per phase.
+Legend: **[FREE]** = suitable for a free/cheap model · **[CLAUDE/GPT]** = strong model · **[YOU]** = manual (install, click, test)
+Status: `[ ]` todo · `[~]` busy · `[x]` done. Work top-down per phase.
 
-## Phase 0 â€“ Setup
+## Phase 0 – Setup
 - [ ] [YOU] Install Unity Hub + Unity 6 LTS (+ Windows Build Support)
 - [ ] [YOU] Install Blender
 - [ ] [YOU] VS Code: C# Dev Kit + Unity extension
@@ -13,15 +13,15 @@ Status: `[ ]` todo Â· `[~]` busy Â· `[x]` done. Work top-down per phase.
 - [ ] [CLAUDE/GPT] Code conventions + assembly definitions
 - [ ] [YOU] Install Git LFS, first commit
 
-## Phase 1 â€“ Style test
-- [x] [CLAUDE/GPT] Colour palette (factions + terrain) â†’ `art/palette/`
+## Phase 1 – Style test
+- [x] [CLAUDE/GPT] Colour palette (factions + terrain) → `art/palette/`
 - [x] [CLAUDE/GPT] Blender script: shared style helpers (chunky bevel, crooked, flat colours)
-- [~] [CLAUDE/GPT] Blender: house, wall, sandbags, tree, crate â†’ FBX
+- [~] [CLAUDE/GPT] Blender: house, wall, sandbags, tree, crate → FBX
 - [ ] [CLAUDE/GPT] URP toon shader + day lighting preset
 - [ ] [FREE] Write the import guide (how FBX goes into Unity)
 - [ ] [YOU] Screenshot + feedback on the style
 
-## Phase 2 â€“ Offline prototype
+## Phase 2 – Offline prototype
 - [ ] [CLAUDE/GPT] Player controller (move, jump, sprint, crouch)
 - [ ] [CLAUDE/GPT] Camera: 3rd/1st person toggle
 - [ ] [CLAUDE/GPT] Weapon system (hitscan + projectile, ammo, reload)
@@ -31,7 +31,7 @@ Status: `[ ]` todo Â· `[~]` busy Â· `[x]` done. Work top-down per phase.
 - [ ] [CLAUDE/GPT] Grey-box test map
 - [ ] [YOU] Test: is walking and shooting fun?
 
-## Phase 3 â€“ Core systems
+## Phase 3 – Core systems
 - [ ] [CLAUDE/GPT] Data architecture: `ClassData`, `ItemData`, `AbilityData`, `BuildableData` (ScriptableObjects)
 - [ ] [FREE] Fill data: 4 classes, ~12 weapons, gadgets, prices (follow the example format)
 - [ ] [CLAUDE/GPT] Ability system (cooldowns, effects)
@@ -42,11 +42,11 @@ Status: `[ ]` todo Â· `[~]` busy Â· `[x]` done. Work top-down per phase.
 - [ ] [CLAUDE/GPT] Blender: buildables (sandbags, wall, gate, tower, crate, beacon, turret)
 - [ ] [CLAUDE/GPT] FOB spawn beacon
 - [ ] [CLAUDE/GPT] Control zone: scoring, contested, move, announcement
-- [ ] [CLAUDE/GPT] Match flow: warmup â†’ play â†’ end â†’ reset
+- [ ] [CLAUDE/GPT] Match flow: warmup → play → end → reset
 - [ ] [FREE] Scoreboard UI
 - [ ] [YOU] Play a full round solo
 
-## Phase 4 â€“ Multiplayer
+## Phase 4 – Multiplayer
 - [ ] [CLAUDE/GPT] Fish-Net setup, choice confirmed
 - [ ] [CLAUDE/GPT] Network movement + lag compensation for hits
 - [ ] [CLAUDE/GPT] Sync money/buy/building/zone (server-authoritative)
@@ -59,4 +59,4 @@ Status: `[ ]` todo Â· `[~]` busy Â· `[x]` done. Work top-down per phase.
 See ROADMAP.md. Add tasks once phase 4 is done.
 
 ## Ideas (parked)
-- Vehicles Â· bots Â· 60 players Â· progression Â· cosmetics Â· night/snow map variants
+- Vehicles · bots · 60 players · progression · cosmetics · night/snow map variants

@@ -1,4 +1,4 @@
-﻿# Handoff & AI rules â€“ Project Mudfront
+# Handoff & AI rules – Project Mudfront
 
 **Every AI (Claude, GPT, free models) reads this first, then GDD.md and TASKS.md.**
 
@@ -22,7 +22,7 @@ G:\dev\ProjectMudfront\
 
 ## 3. Status (update at the end of every session)
 - **Last update:** 2026-11-18
-- **Phase:** 0 â€“ Setup
+- **Phase:** 0 – Setup
 - **Done:** palette (`art/palette/`), Blender style helpers + 5 test-model script, gitignore/LFS, design decisions, GDD, roadmap, tasks, reference notes
 - **Next:** [YOU] finish installing Unity 6.3 LTS + Blender, create URP project in `Mudfront\`. Then run `blender -b -P tools/blender/build_test_models.py` (scripts written, not yet run/tested).
 - **Open questions:** final faction names; servers (dedicated vs player-hosted)
