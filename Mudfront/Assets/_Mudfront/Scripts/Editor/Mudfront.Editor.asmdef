@@ -1,0 +1,1 @@
+{ "name": "Mudfront.Editor", "rootNamespace": "Mudfront.EditorTools", "references": ["Mudfront.Runtime"], "includePlatforms": ["Editor"], "autoReferenced": true }
