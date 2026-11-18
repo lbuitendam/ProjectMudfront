@@ -1,0 +1,55 @@
+﻿<!doctype html><html><head><meta charset="utf-8"><title>Mudfront Palette</title>
+<style>body{font-family:sans-serif;background:#2b2b2b;color:#eee;margin:16px}h2{margin:20px 0 6px}
+.row{display:flex;flex-wrap:wrap;gap:8px}.sw{width:110px}.c{height:60px;border-radius:8px;border:1px solid #0005}
+.n{font-size:12px;margin-top:3px}</style></head><body><h1>Project Mudfront – Palette v0.1</h1><div id="o"></div>
+<script>const p={
+  "_note": "Project Mudfront master palette v0.1. Warm, saturated, toon. Hex sRGB. Used by Blender scripts and Unity.",
+  "factions": {
+    "ironclads_red":  { "main": "#B5452E", "dark": "#7A2A1C", "accent": "#E8B04A", "cloth": "#8C5A3C" },
+    "tidewatch_blue": { "main": "#3F6E9E", "dark": "#26425F", "accent": "#E9E2C8", "cloth": "#5B7184" },
+    "muddogs_green":  { "main": "#7A8A3A", "dark": "#4C5724", "accent": "#D9A23A", "cloth": "#8F7A4A" }
+  },
+  "terrain": {
+    "grass_light": "#8DBF4E",
+    "grass":       "#6DA33F",
+    "grass_dark":  "#4E7D2E",
+    "dirt":        "#A97E52",
+    "mud":         "#7A5A3A",
+    "path":        "#C8A877",
+    "rock":        "#9A948A",
+    "rock_dark":   "#6E6A63",
+    "sand":        "#E3CC92",
+    "snow":        "#EEF3F7",
+    "water":       "#4FA3C7",
+    "water_deep":  "#2D6F94"
+  },
+  "props": {
+    "wood_light": "#C49A63",
+    "wood":       "#9C6B3E",
+    "wood_dark":  "#6B4526",
+    "plaster":    "#EADDBF",
+    "brick":      "#B8644A",
+    "roof_red":   "#A9493A",
+    "roof_slate": "#5E6670",
+    "metal":      "#7D858C",
+    "canvas":     "#C9B98A",
+    "sandbag":    "#C2AE7C",
+    "leaf":       "#5E9A3A",
+    "leaf_light": "#86BE4C",
+    "bark":       "#6E4E33"
+  },
+  "sky": {
+    "day_top": "#5FA8E8", "day_horizon": "#CFE8F5",
+    "dusk_top": "#4A5A9A", "dusk_horizon": "#F2A65E",
+    "night_top": "#141E3A", "night_horizon": "#2E3E66"
+  },
+  "fx": {
+    "explosion_core": "#FFE38A", "explosion": "#FF9B3D", "smoke": "#D8D2C8", "smoke_dark": "#6A645C"
+  }
+}
+;const o=document.getElementById('o');
+function add(t,obj){const h=document.createElement('h2');h.textContent=t;o.appendChild(h);const r=document.createElement('div');r.className='row';
+for(const[k,v]of Object.entries(obj)){if(typeof v==='object'){add(t+' / '+k,v);continue}
+r.insertAdjacentHTML('beforeend','<div class="sw"><div class="c" style="background:'+v+'"></div><div class="n">'+k+'<br>'+v+'</div></div>')}
+if(r.children.length)o.appendChild(r)}
+for(const[k,v]of Object.entries(p)){if(k[0]!=='_')add(k,v)}</script></body></html>
