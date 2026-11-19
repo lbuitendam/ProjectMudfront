@@ -3,6 +3,12 @@
 Legend: **[FREE]** = suitable for a free/cheap model · **[CLAUDE/GPT]** = strong model · **[YOU]** = manual (install, click, test)
 Status: `[ ]` todo · `[~]` busy · `[x]` done. Work top-down per phase.
 
+## Active requested work — Economy (2026-11-19)
+
+Execute [ECONOMY_TASKS.md](ECONOMY_TASKS.md) in order, one task per Claude handoff. It contains 25 tasks with dependencies, implementation scope and acceptance checks. Start at **ECON-01**. All are initially unchecked; this session prepared documentation only.
+
+This queue is the detailed execution source for money, inventory, working equipment, base buy stations, purchased ground vehicles, owner locks, passenger rewards and their multiplayer verification. It expands the original v1 vehicle scope at the user's request. Existing generic money/buy/sync tasks below are satisfied only when their corresponding ECON work is implemented and verified; do not build duplicate systems. Overlapping weapon, health, building, FOB and networking work must be reused and completion reconciled at handoff. Ground transport is no longer a parked idea; aircraft/heavy vehicles remain later work.
+
 ## Phase 0 – Setup
 - [ ] [YOU] Install Unity Hub + Unity 6 LTS (+ Windows Build Support)
 - [ ] [YOU] Install Blender
@@ -59,4 +65,4 @@ Status: `[ ]` todo · `[~]` busy · `[x]` done. Work top-down per phase.
 See ROADMAP.md. Add tasks once phase 4 is done.
 
 ## Ideas (parked)
-- Vehicles · bots · 60 players · progression · cosmetics · night/snow map variants
+- Aircraft/heavy vehicles · bots · 60 players · progression · cosmetics · night/snow map variants

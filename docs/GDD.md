@@ -23,7 +23,7 @@ A cartoon WW2-ish **team shooter** for **3 teams × 10 players**. You **buy your
 | Classes | 4: Assault, Scout, Engineer, Medic |
 | Building | Engineer only |
 | Economy | Buy per life; money resets each match |
-| Vehicles | **Not in v1.** Infantry + building first |
+| Vehicles | Ground transport included in the economy slice (2026-11-19 request); aircraft/heavy vehicles later |
 | Bots | Yes, later (after the core works) |
 | Servers | Decide later; build so dedicated + player-hosted are both possible |
 | Release | Steam, paid one-off. Cosmetics/DLC maybe later |
@@ -53,11 +53,15 @@ Every class can revive (Medic faster). Abilities are data (ScriptableObjects).
 - Respawn 5–8 s at the team base or at your own **FOB** (Engineer).
 
 ## 7. Economy
-- Start money per life: base amount (e.g. $1,000), loadout price is at most that plus what you've saved.
-- Earn: kill, assist, revive, zone time, building, repair. Extra in the zone.
+- One configurable starting grant per player per match (initial tuning: $1,000); no new grant on death. A functional free rifle/ammo kit is available once each life.
+- Earn and count: kills, assists, revives, effective teammate healing, completed passenger transport, zone participation, construction, repairs, spotting assists, resupply and enemy asset destruction. Eligible actions pay extra in the active zone.
 - Money is kept during the match, **reset** at the start of the next one.
-- Buy menu on (re)spawn: class, primary, secondary, gadget, armour.
+- Buy at a physical friendly station at each faction HQ; completed friendly FOBs can provide equipment stations. Menu covers class/loadout, weapons, ammo, medical items, utility and supported vehicles. Respawning returns you to a base to equip; a successful revive preserves your current kit.
+- Purchases must deliver functional equipment. Initial scope: rifle, sidearm, ammo, bandage, parachute, repair tool and passenger jeep. Unsupported products remain unavailable until implemented.
+- Purchased vehicles spawn at a validated delivery pad, locked to their buyer. Only the buyer can unlock for teammates or relock; enemies cannot enter. Destroyed purchased vehicles require another paid purchase.
+- Server validates rewards, transactions, inventory, item use, delivery and access permissions. Retries cannot duplicate spending, items or income.
 - Everything is data: `ItemData` (id, name, cost, class, category, stats).
+- Execution specification and proposed tuning: [ECONOMY_TASKS.md](ECONOMY_TASKS.md). Research and differences from WARDOGS: [reference/wardogs-economy-study.md](reference/wardogs-economy-study.md). Values are playtest defaults; match-only money and four classes remain Mudfront decisions.
 
 ## 8. Base building (Engineer)
 - Build mode: ghost preview → grid snap (1 m) → validity check → server confirms → spawns as a "construction site" → hammering finishes it.
@@ -71,4 +75,4 @@ Every class can revive (Medic faster). Abilities are data (ScriptableObjects).
 - Dedicated server build from day 1 possible (headless).
 
 ## 10. Out of scope v1
-Vehicles, bots, progression/unlocks, cosmetics shop, more than 1 map, ranked.
+Aircraft/heavy vehicles, bots, progression/unlocks, cosmetics shop, cross-match cash persistence, more than 1 map, ranked. Ground transport is included in the requested economy slice.

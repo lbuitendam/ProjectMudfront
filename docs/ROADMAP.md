@@ -2,6 +2,8 @@
 
 Pace: solo, ~3 sessions/week + AI. Times are rough estimates.
 
+2026-11-19 scope update: the requested economy slice now includes functional bought equipment, physical base shops, ground transport, owner locks and teamplay rewards. Follow [ECONOMY_TASKS.md](ECONOMY_TASKS.md), which interleaves the necessary multiplayer foundation with gameplay implementation. The original week estimates below predate this expansion.
+
 ## Phase 0 – Setup (week 1)
 - Install Unity Hub + Unity 6 LTS, Blender, VS Code extensions
 - Unity project (URP) + Git + LFS
@@ -45,4 +47,4 @@ Pace: solo, ~3 sessions/week + AI. Times are rough estimates.
 **Done when:** Steam Playtest / Early Access-ready.
 
 ## Later
-Vehicles, 60 players, progression, cosmetics, more maps, official servers.
+Aircraft/heavy vehicles, 60 players, progression, cosmetics, more maps, official servers. Purchased ground transport is now part of the economy slice.
