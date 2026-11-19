@@ -2,6 +2,10 @@
 
 Running log of actual results for the ECONOMY_TASKS.md queue. Only outcomes actually observed are recorded here.
 
+## Scope amendment — 2026-11-19, revision 2
+
+The ECON-01 results below remain historical evidence; they were not rerun by the documentation revision. The original implementation contract's match-only persistence, class gates and match-scoped identity are superseded by `docs/DECISIONS.md`. Use persistent AccountId, a one-time 10,000 seed, durable authoritative transactions/unlocks, and match/life IDs only for activity validation. Unlocked vehicles admit enemies; final buyer death defaults intact vehicles to public access. Added jobs cover support bonuses and equipment/aircraft expansion. Original ECON-02/03 were completed concurrently under the old contract; ECON-03R now migrates those data/ledger rules and ECON-03A verifies durable persistence before ECON-04 acceptance. No new gameplay or test pass is claimed by this amendment.
+
 ## ECON-01 — Baseline and implementation contract (2026-11-19)
 
 ### Environment

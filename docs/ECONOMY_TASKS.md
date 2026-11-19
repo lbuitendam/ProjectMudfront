@@ -1,6 +1,6 @@
 # Economy implementation queue for Claude
 
-Updated 2026-11-19 after the user decision round. ECON-01 is complete; ECON-02 is in progress. Preserve these statuses. See [DECISIONS.md](DECISIONS.md) for the current approved rules. Earlier baseline contracts are historical where they conflict.
+Updated 2026-11-19 after the user decision round. The original ECON-01–03 have been marked complete by the implementing model, and ECON-04 is in progress. Preserve that historical progress; revision-2 acceptance requires the new ECON-03R migration gate. See [DECISIONS.md](DECISIONS.md) for the current approved rules. Earlier baseline contracts are historical where they conflict.
 
 ## Claude execution instructions
 
@@ -72,8 +72,16 @@ Depends on: 02.
 - Grant 10,000 once at account creation. Keep account balance and durable idempotency records across matches; reset match/life statistics only. Bind reconnects to account identity; never trust an arbitrary client-supplied identity.
 - Acceptance: new match entry never resets the wallet or repeats the initial grant. Duplicate grants/rewards/debits, insufficient funds, negative amounts and overflow cannot change money incorrectly. Two players on the same team have separate wallets. Statistics and money reconcile.
 
-### [ ] ECON-03A — Durable account wallet and recovery
+### [ ] ECON-03R — Reconcile completed data/wallet work with revision 2
 Depends on: 03.
+
+- Review the implementation and evidence from completed ECON-02/03; their original match-only/class-gated acceptance does not prove revision 2. Keep their completed historical status and migrate their code/data rather than duplicating systems.
+- Replace per-match wallet resets/seed grants with persistent-account identity and a one-time 10,000 seed. Remove mandatory class gates, add data for unlock prerequisites, WorldUnlocked access, owner-final-death policy, follow-up budgets and all approved equipment/aircraft categories. Keep unimplemented products hidden.
+- Amend outdated implementation contracts and tests; preserve unrelated gameplay and another worker's in-progress Fish-Net work. Coordinate sequentially before editing overlapping files.
+- Acceptance: updated data/ledger tests prove a new match preserves balance, seed grants cannot repeat, all specialist categories can be represented without class restrictions, and legacy behavior is explicitly superseded. Do not advance ECON-04 acceptance until this task and ECON-03A pass.
+
+### [ ] ECON-03A — Durable account wallet and recovery
+Depends on: 03R.
 
 - Implement an account repository with atomic durable transactions, account/ledger schema versions, unique idempotency keys and one-time seed grant. Bind PlayerId to persistent AccountId; retain MatchId/LifeId for activity validation.
 - Define the canonical authority for shared balances. Local development can use a server-side database, but a client-controlled save is never online authority. Document backup/recovery and production identity/provider choice before exposing public cross-server persistence.
@@ -340,4 +348,4 @@ Depends on: 24.
 
 ## Copy/paste starting prompt for Claude
 
-> Read `docs/START_HERE.md` and follow its implementation prompt. Resume the in-progress task before claiming another. Read DECISIONS.md revision 2 before continuing ECON-02: the original match-only/class-restricted plan is superseded. Execute tasks sequentially, preserve local work, verify acceptance, update status and handoff, commit task-owned changes and continue to the next eligible task when authorized. Do not claim offline checks prove multiplayer behavior.
+> Read `docs/START_HERE.md` and follow its implementation prompt. Resume the in-progress task before claiming another. Read DECISIONS.md revision 2 and complete ECON-03R/03A before accepting ECON-04: the original match-only/class-restricted plan is superseded. Execute tasks sequentially, preserve local work, verify acceptance, update status and handoff, commit task-owned changes and continue to the next eligible task when authorized. Do not claim offline checks prove multiplayer behavior.

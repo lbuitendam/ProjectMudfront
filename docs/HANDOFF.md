@@ -1,6 +1,6 @@
 # Handoff & AI rules – Project Mudfront
 
-**Every AI (Claude, GPT, free models) reads this first, then GDD.md and TASKS.md.**
+**Every AI reads START_HERE.md, this file, DECISIONS.md, GDD.md and TASKS.md before claiming a job.**
 
 ## 1. Rules
 1. Work on **one task** from TASKS.md or its linked active execution queue. For economy work use ECONOMY_TASKS.md in dependency order. Set it to `[~]` when you start and `[x]` only after acceptance checks pass.
@@ -25,7 +25,7 @@ G:\dev\ProjectMudfront\
 - **Phase:** 2–3 (offline prototype + first map grey-box)
 - **Done:** test slice (Slice_Test) + Map 01 Saltmarsh Point grey-box, built and validated in batch mode; 10/10 play mode tests pass (capture/contest/score, shooting, respawn, vehicle enter/drive/exit/destroy/respawn, door clearance, run speed). Reports + screenshots: docs/verification/.
 - **Rebuild/verify (Unity closed):** `Unity.exe -batchmode -projectPath Mudfront -executeMethod Mudfront.EditorTools.SaltmarshGreybox.BuildAndValidate` (also `SliceSceneBuilder.BuildAndValidate`); tests: `-runTests -testPlatform PlayMode`. In the editor: menu **Mudfront**.
-- **Economy planning:** WARDOGS public-source research is in `reference/wardogs-economy-study.md`; 25 sequential Claude tasks with acceptance criteria and a starting prompt are in `ECONOMY_TASKS.md`. No economy code implemented in the planning session. Start with ECON-01, verify the current baseline, and preserve existing local edits (including Shooter.cs). GDD now includes requested purchased ground vehicles and owner locks; money still resets per match.
+- **Economy scope revision 2:** Read `DECISIONS.md` and `START_HERE.md`. User approved persistent account cash (10,000 once), trader-claimed free gear, equipment-defined roles/unlocks, public vehicle unlock including enemies, configurable buyer-final-death public unlock, capped/time-limited support follow-ups, armour/grenades/attachments/large medical kit and transport/armed/attack helicopters with fuel/service/flares. Hot Zone, seasons and gold stay later. Revised tasks are in `ECONOMY_TASKS.md`; complete ECON-03R/03A migration gates before accepting ECON-04; old match-only/class-gated contracts are historical. No gameplay implementation was performed in this documentation revision.
 - **Economy queue:** ECON-01 `[x]`, ECON-02 `[x]` (catalog data + validator; all products hidden until their behaviour is implemented; 36/36 PlayMode). Rebuild/validate catalog: `-executeMethod Mudfront.EditorTools.EconomyCatalogBuilder.BuildAndValidate`. ECON-03 `[x]` (PlayerRegistry + WalletLedger; 50/50 PlayMode). Current: ECON-04 (Fish-Net install + dedicated server/2-client harness).
 - **Next:** execute the economy queue one task at a time. Art direction and grey-box polish remain separate backlog work; multiplayer library (Fish-Net) not installed yet.
 - **Open questions:** final faction names; servers; Muddogs green has weak contrast on grass (1.26:1).

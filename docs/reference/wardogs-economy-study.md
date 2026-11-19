@@ -16,19 +16,24 @@ Useful actions should fund another useful life. Support and transport need visib
 
 Purchasing a vehicle includes delivery and control: spawn somewhere usable, identify its buyer, start locked, explain the lock, and let the buyer change access. Transport requires passenger seats and a meaningful completed trip, not a reward for pressing the enter button.
 
-## Mudfront adaptation (proposed defaults, not WARDOGS facts)
+## Mudfront adaptation (user decisions, revision 2)
 
 | Area | Mudfront decision for this work |
 |---|---|
-| Persistence | Keep the GDD's match-only wallet. No cross-match bank, premium currency or account progression. |
-| Starting funds | One configurable grant at match entry; no repeated death grant. Free basic rifle/ammo available each life. |
-| Shopping | One equipment station and one vehicle delivery area at each of the three faction HQs; one shared menu is acceptable. Active friendly FOBs get an equipment station when that buildable exists; vehicle delivery requires an explicitly configured pad. |
-| Loadout | Keep four classes and Engineer-only building. Validate class restrictions on the authority. |
-| Required purchases | Working rifle, sidearm, reserve ammo, bandage, parachute, repair tool and a ground transport with passenger seats. Revive is available to every class; Medic is faster. |
-| Vehicle access | OwnerOnly on purchase; buyer may select TeamUnlocked or relock. Enemies always denied. Squad mode waits for a real squad system. |
-| Rewards | Kills, damage assists, revives, effective teammate heals, objective participation, completed passenger trips, effective repairs, spotting assists, construction, resupply and enemy asset destruction. |
-| Zone bonuses | Configurable multiplier for eligible actions inside the existing active control zone. No new Hot Zone or match scoring rewrite in this work. |
-| Later extensions | Squad permissions, aircraft, supply pallets, tips/revive bounties, support follow-up royalties, looting/trading, persistent bank, cosmetics. These need separate design/tasks. |
+| Persistence | Authoritative account cash persists across matches/sessions; 10,000 starting credits once. Seasons/gold deferred. |
+| Starting funds | No recurring allowance. Claim free starter gear from a friendly trader once per life. |
+| Shopping | Physical stations at HQs and friendly completed FOBs. Ground/aircraft orders require suitable configured delivery pads. |
+| Roles | Equipment-defined roles and persistent unlock requirements; anyone can buy unlocked building/medical gear. No selected-class gate. |
+| Required purchases | Guns/ammo, bandages, large medical tools, parachutes, repair tools, armour, grenades, attachments, ground transport and specified helicopters. |
+| Vehicle access | OwnerOnly on delivery; buyer can WorldUnlock for everyone INCLUDING enemies or relock. Intact vehicles default to public unlock on buyer final death; configurable alternative preserves locks. |
+| Rewards | Combat, support, objective, transport, repair, spotting, construction, resupply and asset destruction, plus capped/time-limited reviver/driver follow-up kill bonuses. |
+| Aircraft | Transport fuel/damage/repair/refuelling, door-gunner variant, attack helicopter with front gunner/rockets and aircraft flares. |
+| Zone bonuses | Configurable existing Control Zone bonus. Smaller Hot Zone deferred. |
+| Later | Seasons, gold/cosmetics, tips/bounties, squad permissions, supply pallets and looting/trading are not included by this decision round. |
+
+The user's later answers supersede earlier Mudfront-specific match resets and class restrictions. [DECISIONS.md](../DECISIONS.md) separates approved behavior from adjustable defaults. Do not treat these Mudfront decisions as verified WARDOGS behavior.
+
+Additional research during the question round: [official developer announcements](https://steamcommunity.com/app/1867240/announcements/) describe role progression and unlock tracks. [PC Gamer's hands-on report](https://www.pcgamer.com/games/fps/believe-the-hype-for-wardogs-possibly-the-next-great-multiplayer-fps/) describes equipment-defined roles rather than formal selected classes. Exact current unlock tables and payouts remain version-dependent. Use original data and implementation.
 
 ## Counting rules
 
@@ -38,4 +43,4 @@ Prevent easy farming: no self rewards, no friendly kills, no overheal payout, no
 
 ## Planning artifacts
 
-The execution order, acceptance checks and starter tuning are in [ECONOMY_TASKS.md](../ECONOMY_TASKS.md). That queue implements the requested ground-vehicle economy before expanding to the larger WARDOGS sandbox.
+The execution order, acceptance checks and starter tuning are in [ECONOMY_TASKS.md](../ECONOMY_TASKS.md). That queue includes the approved persistent economy, equipment unlocks and ground/air vehicle scope. [START_HERE.md](../START_HERE.md) is the AI job entry point.

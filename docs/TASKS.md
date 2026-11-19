@@ -5,9 +5,9 @@ Status: `[ ]` todo · `[~]` busy · `[x]` done. Work top-down per phase.
 
 ## Active requested work — Economy (2026-11-19)
 
-Execute [ECONOMY_TASKS.md](ECONOMY_TASKS.md) in order, one task per Claude handoff. It contains 25 tasks with dependencies, implementation scope and acceptance checks. Start at **ECON-01**. All are initially unchecked; this session prepared documentation only.
+Read [START_HERE.md](START_HERE.md), [DECISIONS.md](DECISIONS.md), then execute [ECONOMY_TASKS.md](ECONOMY_TASKS.md) in document/dependency order. Existing status: original ECON-01–03 complete, ECON-04 in progress. Complete migration gates ECON-03R/03A before accepting ECON-04; do not restart the baseline or overwrite active work. Added letter-suffixed tasks preserve existing IDs.
 
-This queue is the detailed execution source for money, inventory, working equipment, base buy stations, purchased ground vehicles, owner locks, passenger rewards and their multiplayer verification. It expands the original v1 vehicle scope at the user's request. Existing generic money/buy/sync tasks below are satisfied only when their corresponding ECON work is implemented and verified; do not build duplicate systems. Overlapping weapon, health, building, FOB and networking work must be reused and completion reconciled at handoff. Ground transport is no longer a parked idea; aircraft/heavy vehicles remain later work.
+The queue is the execution source for persistent cash, equipment-based roles/unlocks, working gear, HQ/FOB traders, public vehicle unlocking, support bonuses and transport/armed/attack helicopters. Existing generic tasks below are backlog links, not permission to create duplicate systems. Reconcile overlapping weapon, health, construction, FOB, progression and networking completion at handoff. Original phase estimates predate the expanded scope.
 
 ## Phase 0 – Setup
 - [ ] [YOU] Install Unity Hub + Unity 6 LTS (+ Windows Build Support)
@@ -38,9 +38,9 @@ This queue is the detailed execution source for money, inventory, working equipm
 - [ ] [YOU] Test: is walking and shooting fun?
 
 ## Phase 3 – Core systems
-- [ ] [CLAUDE/GPT] Data architecture: `ClassData`, `ItemData`, `AbilityData`, `BuildableData` (ScriptableObjects)
-- [ ] [FREE] Fill data: 4 classes, ~12 weapons, gadgets, prices (follow the example format)
-- [ ] [CLAUDE/GPT] Ability system (cooldowns, effects)
+- [ ] [CLAUDE/GPT] Data architecture: role/unlock data, `ItemData`, equipment behavior data, `BuildableData` (ScriptableObjects)
+- [ ] [FREE] Fill data: role tracks, weapons, gadgets, unlock requirements and prices (follow the example format)
+- [ ] [CLAUDE/GPT] Equipment ability system (cooldowns, effects; no selected-class gates)
 - [ ] [FREE] Ability text/tooltips
 - [ ] [CLAUDE/GPT] Money system (earn/spend, events)
 - [ ] [CLAUDE/GPT] Buy menu UI + logic
@@ -65,4 +65,4 @@ This queue is the detailed execution source for money, inventory, working equipm
 See ROADMAP.md. Add tasks once phase 4 is done.
 
 ## Ideas (parked)
-- Aircraft/heavy vehicles · bots · 60 players · progression · cosmetics · night/snow map variants
+- Heavy ground combat vehicles · bots · 60 players · seasons/gold · cosmetics · Hot Zone · night/snow map variants
