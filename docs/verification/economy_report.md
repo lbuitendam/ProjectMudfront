@@ -180,3 +180,13 @@ Limitations:
 **Limitations:**
 - A match in which no money moved leaves no MatchId in the journal. Such a match has no money actions that could go stale, but a later networking task may want an explicit match-start record.
 - "Simultaneous sessions" are covered by a single session per account (`AlreadyConnected`) and by serialized spending on one authority. Behaviour across server instances depends on the production database decision above.
+
+## ECON-04 — Fish-Net foundation (in progress, 2026-11-19)
+
+**Install (done):**
+- Installed through the official Package Manager Git URL (fish-networking.gitbook.io, "Installing Fish-Networking"). Manifest entry: `"com.firstgeargames.fishnet": "https://github.com/FirstGearGames/FishNet.git?path=Assets/FishNet#4.7.3"`. Lock: . Git 2.55.
+- **Why 4.7.3:** the newest official tag, 4.7.4, fails to compile on Unity 6000.3.28f1. Its bundled Yak transport reports CS0103/CS1061: `ClientSocket`/`ServerSocket` lack `IterateIncoming`, `SendToServer`, `SendToClient` and `OnLocalServerConnectionState`. 4.7.3 and 4.6.22 compile, and the user approved pinning 4.7.3.
+- Fish-Net generated `Assets/DefaultPrefabObjects.asset` (its spawnable prefab list).
+- Regression with 4.7.3: PlayMode **67/67 passed**.
+
+**Remaining for ECON-04:** connection authenticator bound to AccountId; server-owned match/player state; wallet snapshot, transaction result and notification messages; server validation and rate limiting; headless dedicated server build; a real server process + 2 client processes test (isolated wallets, forged identity and direct reward requests rejected).
