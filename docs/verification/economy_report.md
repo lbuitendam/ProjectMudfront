@@ -15,22 +15,14 @@ Running log of actual results for the ECONOMY_TASKS.md queue. Only outcomes actu
 - None of these are staged or committed by economy tasks.
 
 ### Tests present
-- `Tests/PlayMode/SliceGameplayTests.cs`: 8 tests (capture single/contested/outside radius, shooting enemy vs teammate, respawn, vehicle enter/drive/exit, vehicle destroy/respawn, run speed).
+- `Tests/PlayMode/SliceGameplayTests.cs`: 11 tests (incl. door clearance x2, team tint) (capture single/contested/outside radius, shooting enemy vs teammate, respawn, vehicle enter/drive/exit, vehicle destroy/respawn, run speed).
 - `Tests/PlayMode/MovementFeelTests.cs`: 10 tests (accel, decel, sprint rules, crouch, headroom, jump height, coyote, buffered jump, aim zoom/1st person, camera wall pull-in). Commit e5a4684 says these were "not yet run".
 - No EditMode test assembly.
 
-### Baseline run: BLOCKED
-Command: `Unity.exe -batchmode -projectPath Mudfront -runTests -testPlatform PlayMode -testResults <scratch>/baseline_playmode.xml`
+### Baseline run
+First attempt (2026-11-19 16:41) exited 198: "No valid Unity Editor license found" (Hub signed out). The user signed in.
 
-Result: exit code **198** before compiling or running any test:
-```
-[Licensing::Module] Error: Access token is unavailable; failed to update
-[Licensing::Client] Error: Code 404 ... Found 0 entitlement groups and 0 free entitlements
-No valid Unity Editor license found. Please activate your license.
-```
-No test results were produced. The older `playmode_results.xml` (10/10) is **not** taken as the current baseline. Shooter.cs edits and the 10 movement tests are unverified.
-
-**Needed from the user:** sign in to Unity Hub (and activate the Personal license if asked). After that, rerun the command above. Every later task needs Unity for compiles, `.meta` creation and tests, so the queue stops here.
+Rerun 2026-11-19 16:57, same command: **21/21 PlayMode passed**, 0 failed, 20 s. This includes the 10 movement-feel tests and the local Shooter.cs edits. This is the economy baseline.
 
 ### Stable creation paths
 - Scenes come from editor builders: `SliceSceneBuilder.BuildAndValidate` → `Scenes/Slice_Test.unity`, `SaltmarshGreybox.BuildAndValidate` → `Scenes/Map01_Saltmarsh_Greybox.unity`. Shop stations and vehicle pads must be added in these builders, not by hand edits.

@@ -49,14 +49,14 @@ Use integer credits and deterministic rounding after a single zone multiplier. A
 
 ## Ordered tasks
 
-### [~] ECON-01 — Baseline and implementation contract
+### [x] ECON-01 — Baseline and implementation contract
 Depends on: none.
 
 - Re-read current source and local instructions; capture existing modified files, installed Unity version and actual tests. Identify stable scene/prefab creation paths and record baseline results in `docs/verification/economy_report.md`.
 - Document authority commands/events, player identity, item fulfillment and lifecycle boundaries. Record the above defaults and the match-only persistence decision.
 - Acceptance: report lists real baseline outcomes and any blockers; no gameplay changed or user changes overwritten. Do not infer that old reports still pass.
 
-### [ ] ECON-02 — Data assets and catalog validation
+### [~] ECON-02 — Data assets and catalog validation
 Depends on: 01.
 
 - Add item, reward, station and vehicle definitions plus economy configuration. Include stable IDs, category, price, class eligibility, stacks/slots, behavior/prefab reference and gameplay parameters.
