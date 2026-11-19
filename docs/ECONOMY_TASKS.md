@@ -61,10 +61,10 @@ Depends on: 01.
 
 - Add item, reward, station and vehicle definitions plus economy configuration. Include stable IDs, category, price, unlock requirements, equipment compatibility, stacks/slots, behavior/prefab reference and gameplay parameters.
 - Reconcile current in-progress data against DECISIONS.md: remove mandatory class gates and match-reset grants; support persistent account money, unlock tracks, WorldUnlocked vehicle access, configurable owner-death policy, support reward windows/caps, armour, grenades, attachments and aircraft. Preserve unrelated work. Update the baseline implementation contract with a dated amendment.
-- Supply the trader-claimed free kit and required purchases from the tuning table. Add validation for duplicate IDs, negative/overflowing values, missing behavior/prefabs and incompatible slots. Unimplemented products stay hidden/unavailable.
+- Supply the trader-claimed free kit and required purchases from the tuning table. Add validation for duplicate IDs, negative/overflowing values, missing behavior/prefabs and incompatible slots. All aircraft prices, unlock fees/thresholds, fuel/ammo/flare costs and armour/grenade/attachment parameters must have explicit editable defaults before those products are enabled. Unimplemented products stay hidden/unavailable.
 - Acceptance: invalid assets fail clear validation; editing prices/rewards needs no source changes; the catalog has no purchasable placeholder behavior.
 
-### [~] ECON-03 — Identity, wallet, ledger and action statistics
+### [x] ECON-03 — Identity, wallet, ledger and action statistics
 Depends on: 02.
 
 - Introduce stable player/match/life IDs and an authoritative wallet service usable by an offline authority. Never use TeamId, display name or scene instance ID as player identity.
@@ -72,8 +72,16 @@ Depends on: 02.
 - Grant 10,000 once at account creation. Keep account balance and durable idempotency records across matches; reset match/life statistics only. Bind reconnects to account identity; never trust an arbitrary client-supplied identity.
 - Acceptance: new match entry never resets the wallet or repeats the initial grant. Duplicate grants/rewards/debits, insufficient funds, negative amounts and overflow cannot change money incorrectly. Two players on the same team have separate wallets. Statistics and money reconcile.
 
-### [ ] ECON-04 — Fish-Net foundation and authority boundary
+### [ ] ECON-03A — Durable account wallet and recovery
 Depends on: 03.
+
+- Implement an account repository with atomic durable transactions, account/ledger schema versions, unique idempotency keys and one-time seed grant. Bind PlayerId to persistent AccountId; retain MatchId/LifeId for activity validation.
+- Define the canonical authority for shared balances. Local development can use a server-side database, but a client-controlled save is never online authority. Document backup/recovery and production identity/provider choice before exposing public cross-server persistence.
+- Commit debit/delivery intent and reward receipt durably before acknowledging success. Recover interrupted transactions deterministically, refund or finish pending delivery exactly once, and handle storage failure without inventing spendable cash.
+- Acceptance: earn/spend, leave immediately, restart server, reconnect and join a new match: committed balance persists. Duplicate account creation never re-seeds. Crash/retry around commit and simultaneous sessions cannot double-spend; old-match actions remain invalid even though the wallet persists.
+
+### [~] ECON-04 — Fish-Net foundation and authority boundary
+Depends on: 03A.
 
 - Install and pin Fish-Net following its current official documentation. Record version and setup. Build a minimal dedicated-server + clients scene with connection-bound identity, team assignment and server-owned match/player state.
 - Establish command/result replication for wallet snapshots, transaction results and action notifications. Sender identity comes from the authenticated connection. Clients request actions; they never submit trusted prices, balance changes, reward amounts or arbitrary owners.
@@ -95,15 +103,43 @@ Depends on: 05.
 - Define validate/reserve/fulfill/commit/rollback hooks shared by equipment and vehicle purchases. Use immutable item IDs; do not trust a client inventory snapshot.
 - Acceptance: full/incompatible inventory fails without changing money; equips persist correctly across a reconnect in the same life; duplicated use commands consume once. No paid item is lost on fulfillment failure.
 
+### [ ] ECON-06A — Equipment-defined roles and persistent unlocks
+Depends on: 06, 03A.
+
+- Replace mandatory selected-class gates with configurable role XP tracks, equipment prerequisites and compatible inventory slots. Any account can unlock medical/building/pilot equipment; using one role does not prohibit another.
+- Add authoritative eligible action XP, data-defined thresholds, one-time unlock fees and persistent unlock records. Basic rifle/ammo/bandages and slow revive remain accessible from the start. Large medical kits, advanced tools and aircraft have explicit editable unlock requirements.
+- Expose unlock state, requirement and separate unlock price versus per-life purchase price. Denied unlocks/purchases never charge. Existing class concepts may remain presentation tags, not hidden access gates.
+- Acceptance: one player unlocks and uses both construction and medical equipment without class selection. XP and unlocks survive restart/new match, repeated unlock requests charge once, and the server rejects fabricated XP and unmet prerequisites.
+
 ### [ ] ECON-07 — Bought weapons and ammunition work
-Depends on: 06.
+Depends on: 06A.
 
 - Connect rifle/sidearm data and equipment to actual firing, damage, cadence, magazine size, reload and HUD. Preserve existing aim/cover fixes.
 - Replace unlimited reserve reloads with real inventory ammunition. Define partial reload behavior and switching restrictions; purchases cannot silently overwrite another paid item.
 - Acceptance: purchase via the fulfillment service, equip each weapon and damage a target on the server. Shoot/reload to exhaustion; buying ammo restores only the purchased amount. Repeated equips/reloads do not duplicate ammo.
 
-### [ ] ECON-08 — Downed, revive, final death and kit lifecycle
+### [ ] ECON-07A — Working weapon attachments
 Depends on: 07.
+
+- Implement attachment slots and compatibility data; provide at least a sight, recoil-affecting grip and suppressor with actual aiming/handling/audio effects. Paid attachments belong to an item instance and are lost on final death.
+- Validate installation at an authorized trader; incompatible installs fail without debit or replacement loss. Store effective stats authoritatively and show the effect before buying.
+- Acceptance: purchase/install each attachment, aim/fire and observe its defined effect across clients; switching/reconnecting cannot stack modifiers. Unsupported combinations cannot be bought.
+
+### [ ] ECON-07B — Armour with real damage protection
+Depends on: 07A.
+
+- Implement purchasable helmet/body armour, covered hit regions, mitigation and durability using data. Handle damage on the server and display remaining protection. Explicitly define whether replacing an equipped piece requires a free slot; never silently discard paid armour.
+- Acceptance: identical validated hits demonstrate unarmoured versus protected damage, uncovered hits bypass protection, depleted armour stops protecting, and a replayed hit never consumes durability twice. Armour is retained on revive and lost on final death.
+
+### [ ] ECON-07C — Fragmentation and smoke grenades
+Depends on: 07B.
+
+- Implement purchased throwable inventory, equip/throw/fuse/cancel behavior, authoritative spawning and bounded area damage with cover checks. Provide frag and smoke; smoke must obscure vision consistently for clients rather than merely add a shop icon.
+- Integrate explosion damage attribution and self/friendly damage provenance so resulting heals/revives cannot farm cash. Parameters and stock limits live in data.
+- Acceptance: one throw consumes one grenade; retry produces one projectile; blast range/cover work. Smoke duration/coverage match across clients, late join is correct, and death/menu input cannot throw phantom grenades.
+
+### [ ] ECON-08 — Downed, revive, final death and kit lifecycle
+Depends on: 07C.
 
 - Separate Alive, Downed and Dead states; add bleedout, give-up and teammate hold-to-revive. Everyone can perform a slow basic revive; purchased medical tools improve speed through data-defined behavior, not a selected class.
 - Server validates range, line of sight, team, reviver state, target state and uninterrupted duration. Downed players cannot fire, shop, drive or score zone presence. Respawn begins only after final death.
@@ -117,6 +153,13 @@ Depends on: 08.
 - Emit effective teammate-heal events with damage provenance; self-heal works but pays nothing. Reward eligibility excludes damage caused by the healer/recipient or friendly fire.
 - Acceptance: injured target heals by the configured amount, limited by missing HP; exactly one bandage consumed on success. Full-health/invalid/interrupted uses produce no heal reward or accidental consumption.
 
+### [ ] ECON-09A — Large medical kit and specialist revive tools
+Depends on: 09, 06A.
+
+- Add an unlockable large medical kit with meaningful extra healing capacity and an equipment-based faster revive tool. Data defines charges, restoration, durations and compatibility; any eligible account can buy/use them.
+- Reuse the existing validated heal/revive service and reward provenance. Tool use consumes actual stock; no separate unlimited medical-class healing route.
+- Acceptance: trader purchase equips the correct tool; injured teammates recover real HP and valid revives complete faster than the baseline. Full-health, cancelled, duplicate and invalid uses cannot waste/duplicate stock or mint cash.
+
 ### [ ] ECON-10 — Parachute and fall behavior
 Depends on: 08.
 
@@ -125,7 +168,7 @@ Depends on: 08.
 - Acceptance: equipped player can deploy, descend slowly, steer and land safely from the test height; unequipped player cannot deploy and takes configured fall damage. Death/landing/reset clears state on all clients.
 
 ### [ ] ECON-11 — Combat, support and objective payouts
-Depends on: 09, 10.
+Depends on: 09A, 10.
 
 - Route confirmed kills, effective damage assists, completed revives, effective heals and zone participation through the reward policy into ledger/statistics.
 - Snapshot event location/time on the server; use victim location for combat, recipient location for support, and current player position for objective ticks. Apply the zone multiplier once. Require living on-foot objective participation; no base/empty-zone owner income.
@@ -184,15 +227,65 @@ Depends on: 17.
 - Award once on an alive exit in the active zone after thresholds in the table; use delivery location for the zone multiplier. Driver switches end the qualifying segment and start a new one; no shared/double claim. Repeated loops use a configurable driver/passenger-life cooldown and reward cap.
 - Acceptance: real base-to-zone ride pays driver once per eligible passenger; hopping seats, circling in place, starting in the zone, short rides, crashes, disconnects and passenger death pay nothing. Statistics show completed valid deliveries.
 
-### [ ] ECON-19 — Repair tool, vehicle damage and destruction rewards
+### [ ] ECON-18A — Capped follow-up rewards for revivers and drivers
 Depends on: 18.
+
+- Record server-validated support links only after an eligible revive/delivery. Teammate's later confirmed enemy kills can pay the original provider until the configured window expires or recipient final death, match end or cap ends eligibility.
+- Implement individual and shared recipient-life budgets from DECISIONS.md; define deterministic splitting when several providers qualify. Revives/seat hopping cannot reset the recipient-life budget or stack duplicate links. No chains of bonuses from bonus events.
+- Persist resulting wallet credits atomically, with source kill/support IDs. Separate base kill reward, spot assist and support bonus reasons in ledger/HUD.
+- Acceptance: eligible later kills pay provider without reducing the killer's normal reward; expiry/caps/final death stop payment. Multiple providers stay within the shared budget. Retry/reconnect cannot duplicate a bonus or refresh its window.
+
+### [ ] ECON-19 — Repair tool, vehicle damage and destruction rewards
+Depends on: 18A.
 
 - Implement purchased repair tool with charge inventory, held use, range, cancellation and actual HP restoration on friendly vehicles. Repair never resurrects a wreck. Reward only eligible damage from hostile/environment sources under the configured provenance rule.
 - Pay destruction rewards once per enemy vehicle/asset life with authoritative attacker attribution. Keep infantry kills separate from asset destruction; reward passengers killed only if the combat system confirms their deaths.
 - Acceptance: bought tool restores real HP and consumes charges; full-health/friendly damage repair loops earn nothing. Wrecks never heal back into free purchased vehicles. Duplicate destruction callbacks pay once.
 
+### [ ] ECON-19A — Transport helicopter flight and delivery
+Depends on: 19, 10, 06A.
+
+- Add a usable server-spawned transport helicopter with pilot and passenger seats, lift, yaw, pitch/roll, landing controls, rotor collision envelope, health and validated flight input. Use original placeholder art as needed.
+- Extend purchase delivery to aircraft-safe pads with full clearance/quota checks; apply the same persistent purchase, owner locks, public unlock and buyer-death policies as ground vehicles. Ensure the map/test area has room for safe flight without silently rebuilding the game map.
+- Acceptance: purchase, enter, take off, fly a route, land, exit and re-enter in actual multiplayer. Passenger helicopter exits can deploy a purchased parachute; cockpit/rotor and spawn collisions do not strand players. Failure to deliver never charges.
+
+### [ ] ECON-19B — Aircraft fuel, damage, repair and refuelling
+Depends on: 19A.
+
+- Add server-owned fuel capacity/consumption, engine state, fuel exhaustion, collision/weapon damage and repair integration. Refuelling at authorized HQ/FOB facilities transfers paid finite fuel; configure prices/rates and require a valid landing/service state.
+- Show fuel/health and warnings. A wreck cannot be repaired/refuelled into a free replacement. Protect repair provenance and economic stock accounting against farming.
+- Acceptance: fuel drains while operating, empty fuel affects flight, damage affects the defined flight capabilities, purchased repairs restore real eligible HP, and refuelling debits once and restores exactly the bought fuel. Interrupted/full-tank/remote requests cause no incorrect charge.
+
+### [ ] ECON-19C — Armed transport and door gunner ammunition
+Depends on: 19B, 07A.
+
+- Provide an armed transport variant with explicit gunner seats, bounded aim arcs, rate/heat or reload behavior, finite ammunition and server-resolved damage. Passenger/pilot input never controls an unauthorized gun.
+- Vehicle ammo purchases at an authorized service station replenish actual stocks. Apply access validation to seat switches, including enemy occupants after public unlock, without transferring buyer control.
+- Acceptance: a pilot flies while a second player fires a door gun at a valid target. Ammo exhausts, paid resupply restores only accepted stock, aim arcs/line of fire respect the airframe, and seat/input spoofing is rejected.
+
+### [ ] ECON-19D — Attack helicopter with front gunner and rockets
+Depends on: 19C.
+
+- Implement a separately purchasable attack helicopter with pilot/front-gunner stations, working front weapon and finite rocket inventory. Define weapon control ownership and sight/aim limits in data; rockets have authoritative impact/explosion and attribution.
+- Share aircraft delivery, fuel, repair, access and lifecycle services; no independent free-ammo or client-damage path. Document rocket arming distance and explosion cover behavior.
+- Acceptance: two players fly and operate the front weapon/rockets; direct hits and splash affect real targets, ammunition is consumed once, and exhausted weapons require paid resupply. Occupied/blocked pads and unaffordable orders produce no delivery/debit.
+
+### [ ] ECON-19E — Flares and functional heat-seeking threats
+Depends on: 19D.
+
+- Add finite aircraft flare charges, cooldown, authorized crew control, resupply cost and replicated effects. Implement a minimal server-owned heat-seeking missile/target-lock test threat so flare effectiveness is measurable; do not claim protection from unguided rockets.
+- Configure lock acquisition, warning, line of sight, flare decoy interval/chance and missile retarget rules. Baseline should be deterministic/testable; no decorative-only countermeasure.
+- Acceptance: threat locks/tracks an aircraft without flares; valid flare deployment changes targeting according to data. Empty charges/cooldown/spoofed crew commands do nothing, paid resupply restores charges once, and all clients see the same outcome.
+
+### [ ] ECON-19F — Aircraft economy, crew attribution and lifecycle verification
+Depends on: 19E, 18A.
+
+- Extend qualified transport and follow-up rewards to pilot delivery, including safe parachute landings (award on confirmed alive landing in the zone, not just exit in midair). Stop trip credit on occupant death, enemy travel or unqualified flight.
+- Attribute gunner kills to the actual operator; configure any pilot contribution share within a single capped crew budget. Apply asset destruction rewards once per aircraft life and infantry rewards only to confirmed occupants' deaths.
+- Acceptance: ground and air transport share anti-farm rules; aircraft destruction, buyer death/public unlock, disconnect grace, late join, seat switching and round transitions preserve locks, stocks and persistent cash correctly. Include pilot/gunner/enemy scenarios in ECON-24.
+
 ### [ ] ECON-20 — Spotting and spot assists
-Depends on: 19.
+Depends on: 19F.
 
 - Add a functional binocular/recon item with configurable cost, range, line-of-sight validation, mark duration and teammate-visible markers. Respect unlock and compatibility rules; no selected class gate. No payout for repeatedly marking the same unchanged target.
 - Pay one spotting assist per eligible enemy life when a different teammate confirms a kill within the active mark window; define multiple spotters using one configured shared assist budget.
@@ -239,10 +332,10 @@ Depends on: 24.
 
 1. Start a round with three factions. At every HQ, a friendly player can reach a station and see their own balance. An enemy cannot shop there.
 2. Buy a rifle and ammo, equip, shoot, reload and exhaust ammunition. Buy and use bandages; buy a parachute and safely descend from the test platform. The purchases change the actual game state.
-3. Damage enemies and earn kill/assist credit; revive/heal teammates and earn support income. Observe correct counts, wallet, ledger and objective bonus. A revive keeps the kit; a final death removes it without resetting cash.
+3. Buy/equip armour, attachments, frag/smoke grenades and large medical tools; verify protection, weapon effects, explosion/smoke and actual healing. Unlock gear with legitimate role XP and verify it survives a restart. Damage enemies and earn kill/assist credit; revive/heal teammates and earn support income. Observe correct counts, wallet, ledger and objective bonus. A revive keeps the kit; a final death removes it without resetting cash.
 4. Buy a jeep. Exactly one charge and one delivered vehicle result. It starts locked; the buyer enters, a teammate is denied, and only the buyer can unlock it. After unlock, teammates AND enemies can ride; neither can change lock settings. Buyer final death leaves the intact vehicle publicly accessible under the default configurable policy.
 5. Transport distinct teammates from base into the zone; meaningful completed rides pay once. Repair hostile damage with a purchased tool and confirm real restoration plus eligible income.
-6. Spot an enemy for a teammate's kill, build and supply a real FOB, and purchase at its friendly station. Destroy enemy assets and verify bounded payouts.
+6. Purchase and fly transport, door-gun and attack helicopters; use fuel, refuel/repair, fire guns/rockets, use flares against a real tracking threat, and deliver passengers safely including parachute landings. Verify capped follow-up rewards after a delivered/revived teammate gets kills. Spot an enemy for a teammate's kill, build and supply a real FOB, and purchase at its friendly station. Destroy enemy assets and verify bounded payouts.
 7. Repeat failed/duplicate/spoofed purchases and rewards, destroy the purchased jeep, reconnect the owner, then start another round. Money, kits, locks, statistics and match resets remain correct while cash and unlocks persist. Restart the authority and verify committed balances still exist.
 
 ## Copy/paste starting prompt for Claude

@@ -73,3 +73,19 @@ Results:
 - `EconomyCatalogBuilder.BuildAndValidate` (batch): exit 0, **VALID**.
 - Real asset edit `Item_pistol.asset` Price → -5 (no source change), then validate: **exit 1**, error reported. Restored → exit 0. Prices and rewards are editable data.
 - PlayMode: **36/36 passed** (21 baseline + 15 new `EconomyCatalogTests`: duplicate ID, negative price, price > max balance, missing/unknown behaviour, incompatible slot, missing ammo link, stack overflow, capped reward without cap, duplicate reward reason, vehicle without prefab hidden, unimplemented item hidden, free-kit-only never sold, shipped catalog valid with expected prices).
+
+## ECON-03 — Identity, wallet, ledger and action statistics (2026-11-19)
+
+Added `PlayerRegistry` and `WalletLedger` (pure C#, no MonoBehaviour, so offline and server authorities share them).
+- **Identity:** `PlayerId` is server-issued and sequential. Each player gets a private reconnect token per match. Reconnect maps only through that token, so a client-chosen ID is never trusted. `BeginNewMatch` rotates tokens and drops disconnected players. `LifeId` increases across the server session.
+- **Ledger:**
+  - Integer credits with a hard ceiling (`MaxBalance`, which clamps and returns `Capped`) and checked arithmetic.
+  - Every mutation carries an event ID. A replay returns `Duplicate` with the original TxId.
+  - Purchase request IDs are namespaced by match and player, so one client can't pre-empt or collide with another.
+  - A refund needs a real, successful purchase, can't exceed it, and happens once.
+  - `InsufficientFunds` isn't remembered, so a legitimate retry can still succeed. No reward is paid when `RoundActive` is false.
+- **Statistics:** per-action counters with their own dedupe, separate from payouts.
+- **Reconciliation:** `Reconciles()` checks balance = sum of ledger records = earned - spent.
+- **Lifecycle:** the entry grant is paid once per match, and late joiners get it when they join. Wallets, records and replay sets reset exactly once per new MatchId. Replay records live for the whole match; protection against stale requests from a previous match is enforced by the network layer in ECON-04.
+
+Results: PlayMode **50/50 passed** (36 previous + 14 new `WalletLedgerTests`: entry once, duplicate reward/debit, insufficient funds, negative/zero/forged entry amounts, overflow clamp, separate same-team wallets with colliding request IDs, refund rules, stat dedupe, no payout outside round, late join + new-match reset, reconnect keeps identity/balance, forged/stale token rejected, life ID uniqueness).
