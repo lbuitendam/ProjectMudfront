@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Mudfront.Economy
 {
-    public enum LedgerKind { Seed, Reward, Purchase, Refund, Unlock }
+    public enum LedgerKind { Seed, Reward, Purchase, Refund, Unlock, Fulfilled }
 
     public enum TxStatus { Ok, Duplicate, InsufficientFunds, InvalidAmount, UnknownPlayer, Capped, NoActiveMatch, StaleMatch, StorageFailure }
 
@@ -72,6 +72,7 @@ namespace Mudfront.Economy
         readonly Dictionary<string, LedgerRecord> _byKey = new Dictionary<string, LedgerRecord>();
         readonly HashSet<string> _seenStats = new HashSet<string>();
         readonly List<LedgerRecord> _records = new List<LedgerRecord>();
+        readonly object _gate = new object();
         long _nextTx = 1;
 
         public bool RoundActive { get; set; } = true;
@@ -100,13 +101,14 @@ namespace Mudfront.Economy
         /// <summary>Loads committed history (ECON-03A recovery). Rebuilds balances and idempotency.</summary>
         public void Restore(IEnumerable<LedgerRecord> committed)
         {
+            lock (_gate)
             foreach (var r in committed)
             {
                 if (_byKey.ContainsKey(r.Key)) continue;
                 var w = Wallet(r.AccountId);
                 ApplyToWallet(w, r);
                 r.BalanceAfter = w.Balance;
-                Remember(r, r.Amount > 0 && r.Kind != LedgerKind.Purchase ? TxStatus.Ok : TxStatus.Ok);
+                Remember(r, TxStatus.Ok);
                 if (r.TxId >= _nextTx) _nextTx = r.TxId + 1;
             }
         }
@@ -114,27 +116,35 @@ namespace Mudfront.Economy
         /// <summary>Credits the one-time account seed. Never repeats for the same account.</summary>
         public TxResult GrantSeed(PlayerId p)
         {
+            lock (_gate)
+            {
             var acct = _players.AccountOf(p);
             if (acct == null) return new TxResult(TxStatus.UnknownPlayer, 0, 0, 0);
             return Credit(acct, LedgerKind.Seed, (int)RewardReason.AccountSeed, _cfg.AccountSeedGrant, "seed:" + acct, "account seed", allowZero: true);
+            }
         }
 
         /// <summary>Credits a reward for an action in match <paramref name="matchId"/>. Pays nothing
         /// outside an active round or for an old match.</summary>
         public TxResult Reward(PlayerId p, RewardReason reason, int amount, int matchId, string eventId, string detail = null)
         {
+            lock (_gate)
+            {
             var acct = _players.AccountOf(p);
             if (acct == null) return new TxResult(TxStatus.UnknownPlayer, 0, 0, 0);
             if (matchId != MatchId) return new TxResult(TxStatus.StaleMatch, 0, 0, Balance(p));
             if (!RoundActive) return new TxResult(TxStatus.NoActiveMatch, 0, 0, Balance(p));
             if (reason == RewardReason.AccountSeed || string.IsNullOrEmpty(eventId)) return new TxResult(TxStatus.InvalidAmount, 0, 0, Balance(p));
             return Credit(acct, LedgerKind.Reward, (int)reason, amount, $"rw:{matchId}:{eventId}", detail);
+            }
         }
 
         /// <summary>Debits for a purchase or unlock. Fails with no change when funds are insufficient.
         /// Client request IDs are namespaced per account and match.</summary>
         public TxResult Debit(PlayerId p, int amount, int matchId, string requestId, string detail = null, LedgerKind kind = LedgerKind.Purchase)
         {
+            lock (_gate)
+            {
             var acct = _players.AccountOf(p);
             if (acct == null) return new TxResult(TxStatus.UnknownPlayer, 0, 0, 0);
             if (matchId != MatchId) return new TxResult(TxStatus.StaleMatch, 0, 0, Balance(p));
@@ -145,6 +155,7 @@ namespace Mudfront.Economy
             var w = Wallet(acct);
             if (amount > w.Balance) return new TxResult(TxStatus.InsufficientFunds, 0, 0, w.Balance); // not remembered: may retry
             return Apply(w, key, kind, 0, -amount, matchId, detail);
+            }
         }
 
         /// <summary>Refund of a failed purchase; must reference a real successful purchase, at most its amount, once.</summary>
@@ -158,9 +169,48 @@ namespace Mudfront.Economy
         /// <summary>Recovery path: refund an outstanding purchase by its durable key (no live session needed).</summary>
         public TxResult RefundByKey(string account, string purchaseKey, int amount, string detail = null)
         {
+            lock (_gate)
+            {
             if (!_byKey.TryGetValue(purchaseKey, out var buy) || buy.AccountId != account || buy.Kind == LedgerKind.Refund || amount > -buy.Amount)
                 return new TxResult(TxStatus.InvalidAmount, 0, 0, GetAccount(account)?.Balance ?? 0);
             return Credit(account, LedgerKind.Refund, 0, amount, "refund:" + purchaseKey, detail, matchId: buy.MatchId);
+            }
+        }
+
+        /// <summary>Durably marks a paid purchase as delivered. Until then, recovery refunds it.</summary>
+        public TxResult MarkFulfilled(string purchaseKey)
+        {
+            lock (_gate)
+            {
+                if (!_byKey.TryGetValue(purchaseKey, out var buy) || (buy.Kind != LedgerKind.Purchase && buy.Kind != LedgerKind.Unlock))
+                    return new TxResult(TxStatus.InvalidAmount, 0, 0, 0);
+                string key = "done:" + purchaseKey;
+                if (_seen.TryGetValue(key, out var prev)) return Dup(prev);
+                if (_byKey.ContainsKey("refund:" + purchaseKey)) return new TxResult(TxStatus.InvalidAmount, 0, 0, 0);
+                return Apply(Wallet(buy.AccountId), key, LedgerKind.Fulfilled, 0, 0, buy.MatchId, null);
+            }
+        }
+
+        /// <summary>Purchases/unlocks with neither a fulfilment nor a refund record.</summary>
+        public List<LedgerRecord> PendingPurchases()
+        {
+            var list = new List<LedgerRecord>();
+            lock (_gate)
+                foreach (var r in _records)
+                    if ((r.Kind == LedgerKind.Purchase || r.Kind == LedgerKind.Unlock) && r.Amount < 0
+                        && !_byKey.ContainsKey("done:" + r.Key) && !_byKey.ContainsKey("refund:" + r.Key))
+                        list.Add(r);
+            return list;
+        }
+
+        /// <summary>Deterministic crash recovery: every interrupted purchase is refunded exactly once
+        /// (refund keys are unique, so running recovery again is a no-op). Returns refunds made.</summary>
+        public int RecoverInterruptedPurchases()
+        {
+            int n = 0;
+            foreach (var r in PendingPurchases())
+                if (RefundByKey(r.AccountId, r.Key, -r.Amount, "recovery refund").Status == TxStatus.Ok) n++;
+            return n;
         }
 
         public static string PurchaseKey(string account, int matchId, string requestId) => $"buy:{account}:{matchId}:{requestId}";

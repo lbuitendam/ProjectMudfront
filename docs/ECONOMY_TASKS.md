@@ -80,7 +80,7 @@ Depends on: 03.
 - Amend outdated implementation contracts and tests; preserve unrelated gameplay and another worker's in-progress Fish-Net work. Coordinate sequentially before editing overlapping files.
 - Acceptance: updated data/ledger tests prove a new match preserves balance, seed grants cannot repeat, all specialist categories can be represented without class restrictions, and legacy behavior is explicitly superseded. Do not advance ECON-04 acceptance until this task and ECON-03A pass.
 
-### [~] ECON-03A — Durable account wallet and recovery
+### [x] ECON-03A — Durable account wallet and recovery
 Depends on: 03R.
 
 - Implement an account repository with atomic durable transactions, account/ledger schema versions, unique idempotency keys and one-time seed grant. Bind PlayerId to persistent AccountId; retain MatchId/LifeId for activity validation.

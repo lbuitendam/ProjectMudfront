@@ -73,6 +73,13 @@ namespace Mudfront.Economy
 
         public int CurrentLife(PlayerId p) => _players.TryGetValue(p, out var e) ? e.LifeId : 0;
 
+        /// <summary>After a server restart, continue numbering above every match in the durable
+        /// ledger so actions from earlier matches stay invalid.</summary>
+        public void ResumeAfter(int lastPersistedMatch)
+        {
+            if (lastPersistedMatch >= MatchId) MatchId = lastPersistedMatch + 1;
+        }
+
         /// <summary>Begins the next match: new MatchId, lives end. Accounts, money and unlocks persist.</summary>
         public int BeginNewMatch()
         {

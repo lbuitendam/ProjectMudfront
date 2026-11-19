@@ -129,3 +129,54 @@ Results:
 Limitations:
 - Older item assets still have an orphan `AllowedClasses` line in their YAML. Unity ignores it and drops it the next time it reserializes the asset.
 - The Pilot track has no XP source yet; ECON-19F adds pilot XP. The transport helicopter needs 0 XP so it can be unlocked.
+
+## ECON-03A — Durable account wallet and recovery (2026-11-19)
+
+**Canonical authority.** One server-side `FileLedgerStore` per account database. It is an append-only journal (`#mudfront-ledger schema=1` header, then one record per line as FNV-1a checksum plus JSON).
+- The file is opened with `FileShare.None`, so only one authority process can hold a given database.
+- Every `Commit` is `Flush(true)` (fsync) **before** the ledger acknowledges anything.
+- `WalletLedger` serializes all mutations under a lock.
+- PlayerId is a session handle bound to the persistent AccountId, from `PlayerRegistry.Join(authenticatedAccountId)`. MatchId and LifeId are kept for validating actions.
+- After a restart, `PlayerRegistry.ResumeAfter` numbers matches above every persisted MatchId, so old-match actions stay invalid.
+
+**Schema versions.** The ledger schema is in the journal header; the store refuses a newer schema. The catalog/account data version is `EconomyConfig.DataVersion`.
+
+**Idempotency.** These keys are durable: seed `seed:{account}`, purchases `buy:{account}:{match}:{request}`, rewards `rw:{match}:{event}`, refunds `refund:{purchaseKey}` and delivery `done:{purchaseKey}`. They are rebuilt by `Restore()` on startup.
+
+**Purchase intent.** The debit record *is* the durable intent, and delivery writes a `Fulfilled` record. On startup `AccountAuthority.Open` refunds every purchase or unlock that has neither a fulfilment nor a refund. Refund keys are unique, so running recovery again does nothing.
+
+**Failure handling.**
+- A failed write returns `StorageFailure`, changes nothing and isn't remembered, so a retry works exactly once.
+- A torn final line (crash mid-write) was never acknowledged, so it is discarded and truncated.
+- A complete line with a bad checksum is corruption: the server **refuses to start** and must be restored from backup, rather than inventing or losing cash.
+- A refused file is released immediately. A handle leak here was found by the tests and fixed.
+
+**Backup and recovery procedure.**
+- `FileLedgerStore.Backup(dest)` copies a consistent journal while the server holds the lock. Schedule it periodically and before upgrades.
+- To restore: stop the server, replace the journal with the newest good backup, and start. Startup recovery refunds any purchase that was in flight.
+- Money committed after that backup is lost, so back up often and keep the journal on redundant storage.
+
+**Production identity and provider: not decided, so cross-server persistence is not exposed.**
+- Local development uses `FileLedgerStore` on the server host. The AccountId comes from the connection authenticator (ECON-04). A dev authenticator is acceptable locally.
+- Before a public cross-server deployment, a decision is needed on (a) an identity provider (platform auth ticket, e.g. Steam or Unity Authentication, verified by the server) and (b) one canonical transactional database service shared by all game servers. Each server would call it instead of its own file.
+- Until then, each server's database is separate and there is **no shared cross-server wallet** (DECISIONS.md). A client save file is never an authority.
+
+**Results:**
+- PlayMode: **67/67 passed** (57 previous + 10 `AccountPersistenceTests`):
+  - Earn/spend, restart, reconnect and new match keep the balance.
+  - No re-seed across restarts.
+  - Old-match actions are invalid after a restart.
+  - A crash between debit and delivery is refunded once, and recovery is idempotent.
+  - Idempotency keys survive a restart.
+  - A torn tail is discarded.
+  - A corrupt record refuses startup.
+  - A storage failure invents no cash and a retry succeeds once.
+  - A second authority can't open the database.
+  - 200 parallel debits on 10,000 give exactly 100 successes and a balance of 0, with no overdraw.
+- **Real two-process restart** (`EconomyPersistenceProbe`, two separate batch Unity processes on one database):
+  - Phase 1: seed, kill +150, rifle -250 delivered, jeep -600 not delivered; the process exits without closing the store; balance 9,300.
+  - Phase 2 (new process): `refunds=1 seed=Duplicate balanceAfterRestart=9900 staleOldMatchDebit=StaleMatch balanceAfterNewMatch=9900 => PASS`.
+
+**Limitations:**
+- A match in which no money moved leaves no MatchId in the journal. Such a match has no money actions that could go stale, but a later networking task may want an explicit match-start record.
+- "Simultaneous sessions" are covered by a single session per account (`AlreadyConnected`) and by serialized spending on one authority. Behaviour across server instances depends on the production database decision above.
