@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a86e2d95ea2ef31438edf961750ce9fc, type: 3}
+  m_Name: Station_hq_equipment
+  m_EditorClassIdentifier: Mudfront.Runtime::Mudfront.Economy.StationDefinition
+  Id: hq_equipment
+  DisplayName: HQ Quartermaster
+  Kind: 0
+  InteractRange: 3
+  Items:
+  - {fileID: 11400000, guid: 0831fe79b5bc7c245bdb2f438748ce7e, type: 2}
+  - {fileID: 11400000, guid: ff9eacdb368b2ef4a8400edb4ad9ebf2, type: 2}
+  - {fileID: 11400000, guid: c7fd52f2fdee8ec4ea1b732d141f6230, type: 2}
+  - {fileID: 11400000, guid: 2f962024c3722c64b88369232dc632fa, type: 2}
+  - {fileID: 11400000, guid: 3b89313776e1af34f9329ed04d054e3f, type: 2}
+  - {fileID: 11400000, guid: 574ee998c51676a4c89a8ce97f6e1801, type: 2}
+  - {fileID: 11400000, guid: 23f0d6fa401bc394bad9c5503fa70b6b, type: 2}
+  Vehicles: []

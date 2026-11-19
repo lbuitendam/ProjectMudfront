@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f11fae78fded9b742802b822c0088754, type: 3}
+  m_Name: Item_rifle_basic
+  m_EditorClassIdentifier: Mudfront.Runtime::Mudfront.Economy.ItemDefinition
+  Id: rifle_basic
+  DisplayName: Field Rifle (free)
+  Category: 0
+  Slot: 0
+  AllowedClasses: 15
+  Purchasable: 0
+  Price: 0
+  QuantityPerPurchase: 1
+  MaxStack: 1
+  BehaviorId: weapon.hitscan
+  Prefab: {fileID: 0}
+  Damage: 25
+  FireRate: 8
+  Range: 150
+  MagazineSize: 30
+  ReloadTime: 1.5
+  AmmoItemId: ammo_rifle
+  UseDuration: 0
+  EffectAmount: 0
+  EffectRange: 0

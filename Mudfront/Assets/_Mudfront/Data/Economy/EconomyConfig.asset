@@ -1,0 +1,157 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e26c45712b2fceb498853038c899ac9a, type: 3}
+  m_Name: EconomyConfig
+  m_EditorClassIdentifier: Mudfront.Runtime::Mudfront.Economy.EconomyConfig
+  MatchEntryGrant: 1000
+  MaxBalance: 1000000
+  ZoneMultiplier: 1.5
+  Items:
+  - {fileID: 11400000, guid: 3c00d8c646634974c9986cccf1ff74f6, type: 2}
+  - {fileID: 11400000, guid: 0831fe79b5bc7c245bdb2f438748ce7e, type: 2}
+  - {fileID: 11400000, guid: ff9eacdb368b2ef4a8400edb4ad9ebf2, type: 2}
+  - {fileID: 11400000, guid: c7fd52f2fdee8ec4ea1b732d141f6230, type: 2}
+  - {fileID: 11400000, guid: 2f962024c3722c64b88369232dc632fa, type: 2}
+  - {fileID: 11400000, guid: 3b89313776e1af34f9329ed04d054e3f, type: 2}
+  - {fileID: 11400000, guid: 574ee998c51676a4c89a8ce97f6e1801, type: 2}
+  - {fileID: 11400000, guid: 23f0d6fa401bc394bad9c5503fa70b6b, type: 2}
+  Vehicles:
+  - {fileID: 11400000, guid: 85eeb9d633e5b764bbdb74a1a484c830, type: 2}
+  Stations:
+  - {fileID: 11400000, guid: 548ca22a04b6a3146bb4eed4b0e6536c, type: 2}
+  - {fileID: 11400000, guid: 418188ddef4ed5248842eb98dc479f32, type: 2}
+  FreeKit:
+  - Item: {fileID: 11400000, guid: 3c00d8c646634974c9986cccf1ff74f6, type: 2}
+    Quantity: 1
+  - Item: {fileID: 11400000, guid: c7fd52f2fdee8ec4ea1b732d141f6230, type: 2}
+    Quantity: 60
+  Rewards:
+  - Reason: 10
+    Amount: 150
+    PerUnit: 0
+    ZoneBonusEligible: 1
+    CapScope: 2
+    Cap: 150
+    WindowSeconds: 0
+    IntervalSeconds: 0
+    MinDistance: 0
+    MinSeconds: 0
+  - Reason: 11
+    Amount: 75
+    PerUnit: 0
+    ZoneBonusEligible: 1
+    CapScope: 2
+    Cap: 75
+    WindowSeconds: 15
+    IntervalSeconds: 0
+    MinDistance: 0
+    MinSeconds: 0
+  - Reason: 20
+    Amount: 150
+    PerUnit: 0
+    ZoneBonusEligible: 1
+    CapScope: 1
+    Cap: 150
+    WindowSeconds: 0
+    IntervalSeconds: 0
+    MinDistance: 0
+    MinSeconds: 0
+  - Reason: 21
+    Amount: 1
+    PerUnit: 1
+    ZoneBonusEligible: 1
+    CapScope: 3
+    Cap: 100
+    WindowSeconds: 0
+    IntervalSeconds: 0
+    MinDistance: 0
+    MinSeconds: 0
+  - Reason: 30
+    Amount: 20
+    PerUnit: 0
+    ZoneBonusEligible: 0
+    CapScope: 0
+    Cap: 0
+    WindowSeconds: 0
+    IntervalSeconds: 10
+    MinDistance: 0
+    MinSeconds: 0
+  - Reason: 40
+    Amount: 100
+    PerUnit: 0
+    ZoneBonusEligible: 0
+    CapScope: 1
+    Cap: 100
+    WindowSeconds: 0
+    IntervalSeconds: 0
+    MinDistance: 75
+    MinSeconds: 10
+  - Reason: 50
+    Amount: 1
+    PerUnit: 1
+    ZoneBonusEligible: 1
+    CapScope: 4
+    Cap: 150
+    WindowSeconds: 0
+    IntervalSeconds: 0
+    MinDistance: 0
+    MinSeconds: 0
+  - Reason: 60
+    Amount: 50
+    PerUnit: 0
+    ZoneBonusEligible: 1
+    CapScope: 0
+    Cap: 0
+    WindowSeconds: 15
+    IntervalSeconds: 0
+    MinDistance: 0
+    MinSeconds: 0
+  - Reason: 70
+    Amount: 50
+    PerUnit: 0
+    ZoneBonusEligible: 1
+    CapScope: 0
+    Cap: 0
+    WindowSeconds: 0
+    IntervalSeconds: 0
+    MinDistance: 0
+    MinSeconds: 0
+  - Reason: 71
+    Amount: 1
+    PerUnit: 1
+    ZoneBonusEligible: 1
+    CapScope: 3
+    Cap: 60
+    WindowSeconds: 0
+    IntervalSeconds: 0
+    MinDistance: 0
+    MinSeconds: 0
+  - Reason: 80
+    Amount: 200
+    PerUnit: 0
+    ZoneBonusEligible: 1
+    CapScope: 4
+    Cap: 200
+    WindowSeconds: 0
+    IntervalSeconds: 0
+    MinDistance: 0
+    MinSeconds: 0
+  - Reason: 81
+    Amount: 50
+    PerUnit: 0
+    ZoneBonusEligible: 1
+    CapScope: 4
+    Cap: 50
+    WindowSeconds: 0
+    IntervalSeconds: 0
+    MinDistance: 0
+    MinSeconds: 0

@@ -1,12 +1,12 @@
 # Economy implementation queue for Claude
 
-Created 2026-11-19. Status: planning complete; implementation not started.
+Updated 2026-11-19 after the user decision round. ECON-01 is complete; ECON-02 is in progress. Preserve these statuses. See [DECISIONS.md](DECISIONS.md) for the current approved rules. Earlier baseline contracts are historical where they conflict.
 
 ## Claude execution instructions
 
-Read HANDOFF.md, GDD.md, TASKS.md, this file and [the research](reference/wardogs-economy-study.md). Execute the first unchecked ECON task whose dependencies are complete. Mark it `[~]`, implement only that task, run its acceptance checks and relevant regressions, update this file and HANDOFF.md, then stop with a handoff. Commit only task-owned changes as required by HANDOFF.md; never stage unrelated work. If a task needs multiple sessions, leave it `[~]` and record remaining work. Do not mark a task complete based only on a mock UI or simulated server result.
+Read START_HERE.md, DECISIONS.md, HANDOFF.md, GDD.md, TASKS.md, this file and [the research](reference/wardogs-economy-study.md). Execute the first unchecked ECON task whose dependencies are complete. Mark it `[~]`, implement only that task, run its acceptance checks and relevant regressions, update this file and HANDOFF.md, and commit a task handoff. When the user authorizes working through the queue, continue automatically to the next eligible task; otherwise stop after the requested task. Commit only task-owned changes as required by HANDOFF.md; never stage unrelated work. If a task needs multiple sessions, leave it `[~]` and record remaining work. Do not mark a task complete based only on a mock UI or simulated server result.
 
-Every task is [CLAUDE/GPT]. Order is intentional. Do not add unrelated art, aircraft, progression or a new game mode. Gameplay prices, amounts, ranges, timers, limits and multipliers belong in data assets. Names below are suggested types; adapt to existing architecture without creating duplicate systems. Create Unity `.meta` files through Unity and preserve asset references.
+Every task is [CLAUDE/GPT]. Order is intentional. Aircraft and equipment unlock progression are now in scope through the added tasks. Do not add unrelated art or a new game mode. Letter-suffixed tasks are executed where placed below, after their stated dependencies; existing task IDs remain stable. Gameplay prices, amounts, ranges, timers, limits and multipliers belong in data assets. Names below are suggested types; adapt to existing architecture without creating duplicate systems. Create Unity `.meta` files through Unity and preserve asset references.
 
 ## Existing code and constraints
 
@@ -33,8 +33,8 @@ These are Mudfront playtest defaults, not WARDOGS values. ECON-02 creates editab
 
 | Setting | Initial value/rule |
 |---|---|
-| Match entry | 1,000 credits once per player per match; retain balance through death/reconnect in that match |
-| Free kit | Basic rifle + 60 reserve rounds, once per life; no stacking, selling or repeat claims |
+| Account creation | 10,000 credits once per account; balance persists across matches, sessions, disconnects and server restarts; no recurring match/death grant |
+| Free kit | Claim starter rifle + 60 reserve rounds from a trader once per life; no automatic paid kit, stacking, selling or repeat claims |
 | Purchases | Rifle 250; sidearm 100; 30 reserve rounds 30; bandage 50; parachute 150; repair tool 150; transport jeep 600 |
 | Kill / damage assist | 150 / up to 75 proportional to effective enemy damage in last 15 seconds; once per victim life |
 | Revive / healing | 150 per completed eligible revive; 1 per actual teammate HP restored, up to 100 per recipient life |
@@ -53,23 +53,24 @@ Use integer credits and deterministic rounding after a single zone multiplier. A
 Depends on: none.
 
 - Re-read current source and local instructions; capture existing modified files, installed Unity version and actual tests. Identify stable scene/prefab creation paths and record baseline results in `docs/verification/economy_report.md`.
-- Document authority commands/events, player identity, item fulfillment and lifecycle boundaries. Record the above defaults and the match-only persistence decision.
+- Document authority commands/events, player identity, item fulfillment and lifecycle boundaries. Original baseline used match-only money; this has been superseded by DECISIONS.md. ECON-02 and ECON-03A reconcile the contract without rerunning completed baseline work.
 - Acceptance: report lists real baseline outcomes and any blockers; no gameplay changed or user changes overwritten. Do not infer that old reports still pass.
 
-### [~] ECON-02 — Data assets and catalog validation
+### [x] ECON-02 — Data assets and catalog validation
 Depends on: 01.
 
-- Add item, reward, station and vehicle definitions plus economy configuration. Include stable IDs, category, price, class eligibility, stacks/slots, behavior/prefab reference and gameplay parameters.
-- Supply the free kit and required purchases from the tuning table. Add validation for duplicate IDs, negative/overflowing values, missing behavior/prefabs and incompatible slots. Unimplemented products stay hidden/unavailable.
+- Add item, reward, station and vehicle definitions plus economy configuration. Include stable IDs, category, price, unlock requirements, equipment compatibility, stacks/slots, behavior/prefab reference and gameplay parameters.
+- Reconcile current in-progress data against DECISIONS.md: remove mandatory class gates and match-reset grants; support persistent account money, unlock tracks, WorldUnlocked vehicle access, configurable owner-death policy, support reward windows/caps, armour, grenades, attachments and aircraft. Preserve unrelated work. Update the baseline implementation contract with a dated amendment.
+- Supply the trader-claimed free kit and required purchases from the tuning table. Add validation for duplicate IDs, negative/overflowing values, missing behavior/prefabs and incompatible slots. Unimplemented products stay hidden/unavailable.
 - Acceptance: invalid assets fail clear validation; editing prices/rewards needs no source changes; the catalog has no purchasable placeholder behavior.
 
-### [ ] ECON-03 — Identity, wallet, ledger and action statistics
+### [~] ECON-03 — Identity, wallet, ledger and action statistics
 Depends on: 02.
 
 - Introduce stable player/match/life IDs and an authoritative wallet service usable by an offline authority. Never use TeamId, display name or scene instance ID as player identity.
 - Add checked integer credit/debit, transaction IDs, reward event IDs, reason codes, balances, earned/spent totals and per-action statistics. Deduplicate retries and retain records until the relevant match/life cannot replay.
-- Grant entry funds once, handle late joins and reset exactly once on a new match. Define reconnect mapping without trusting an arbitrary client-supplied identity.
-- Acceptance: duplicate grants/rewards/debits, insufficient funds, negative amounts and overflow cannot change money incorrectly. Two players on the same team have separate wallets. Statistics and money reconcile.
+- Grant 10,000 once at account creation. Keep account balance and durable idempotency records across matches; reset match/life statistics only. Bind reconnects to account identity; never trust an arbitrary client-supplied identity.
+- Acceptance: new match entry never resets the wallet or repeats the initial grant. Duplicate grants/rewards/debits, insufficient funds, negative amounts and overflow cannot change money incorrectly. Two players on the same team have separate wallets. Statistics and money reconcile.
 
 ### [ ] ECON-04 — Fish-Net foundation and authority boundary
 Depends on: 03.
@@ -90,7 +91,7 @@ Depends on: 04.
 ### [ ] ECON-06 — Inventory, equipment and purchase fulfillment contract
 Depends on: 05.
 
-- Add authoritative per-life inventory, class-validated equipment slots, stack limits, finite reserve ammo and item use/cancel commands. Replicate owner inventory and visible equipped state appropriately.
+- Add authoritative per-life inventory, unlock-validated compatible equipment slots, stack limits, finite reserve ammo and item use/cancel commands. Replicate owner inventory and visible equipped state appropriately.
 - Define validate/reserve/fulfill/commit/rollback hooks shared by equipment and vehicle purchases. Use immutable item IDs; do not trust a client inventory snapshot.
 - Acceptance: full/incompatible inventory fails without changing money; equips persist correctly across a reconnect in the same life; duplicated use commands consume once. No paid item is lost on fulfillment failure.
 
@@ -104,7 +105,7 @@ Depends on: 06.
 ### [ ] ECON-08 — Downed, revive, final death and kit lifecycle
 Depends on: 07.
 
-- Separate Alive, Downed and Dead states; add bleedout, give-up and teammate hold-to-revive. Every class can revive; Medic uses a data-defined faster duration.
+- Separate Alive, Downed and Dead states; add bleedout, give-up and teammate hold-to-revive. Everyone can perform a slow basic revive; purchased medical tools improve speed through data-defined behavior, not a selected class.
 - Server validates range, line of sight, team, reviver state, target state and uninterrupted duration. Downed players cannot fire, shop, drive or score zone presence. Respawn begins only after final death.
 - Successful revive retains inventory; final death clears the paid kit and opens a new life with one free-kit entitlement. Preserve wallet; cancel obsolete timers and transactions.
 - Acceptance: two competing revivers produce one revive; respawn reset never pays as revive. Cancellation, bleedout, disconnect and death-in-vehicle clean up safely. Match end cancels pending activity.
@@ -148,7 +149,7 @@ Depends on: 12.
 ### [ ] ECON-14 — Buy menu, inventory feedback and rebuy
 Depends on: 13.
 
-- Build an actual runtime menu using installed Unity UI tooling: Weapons, Ammo, Medical, Utility and Vehicles; class choice/restrictions, prices, balance, quantity, inventory occupancy, selected item behavior and purchase result. Include the free kit.
+- Build an actual runtime menu using installed Unity UI tooling: Weapons, Ammo, Medical, Armour, Attachments, Utility and Vehicles; role/unlock progress and equipment compatibility, prices, balance, quantity, inventory occupancy, selected item behavior and purchase result. Include the free kit.
 - Unsupported products remain unavailable. Retain the previous life loadout as a purchase list, not free inventory; rebuy revalidates current eligibility and affordability. Use an atomic equipment basket; vehicles require a separate explicit order.
 - Block firing, aiming, movement, vehicle controls and world interactions while the menu owns input; restore cursor/input on close, death, range loss and disconnect. Do not pause the server.
 - Acceptance: mouse/keyboard navigation at 1280x720 and 1920x1080, affordable/unaffordable states and repeated clicks work. Clicking Buy never fires a bullet. Rebuy charges current prices and cannot duplicate free claims.
@@ -170,10 +171,11 @@ Depends on: 15.
 ### [ ] ECON-17 — Owner locks and unlock controls
 Depends on: 16.
 
-- Spawn purchased vehicles as OwnerOnly before any client can enter. Buyer can change to TeamUnlocked or relock through a nearby interaction; authenticate the sender and validate range/state on the server.
-- Enforce access on every seat entry/switch and driver takeover. Enemies always denied. Relocking keeps current occupants until voluntary exit; no new unauthorized entry. Non-owner occupants cannot change permissions. Owner identity persists through respawn.
+- Spawn purchased vehicles as OwnerOnly before any client can enter. Buyer can change to WorldUnlocked or relock through a nearby interaction; authenticate the sender and validate range/state on the server. WorldUnlocked permits teammates AND enemies; it does not transfer ownership or lock-control rights.
+- Enforce access on every seat entry/switch and driver takeover. Locked mode denies everyone except the buyer; WorldUnlocked admits everyone. Relocking keeps current occupants until voluntary exit; no new unauthorized entry. Non-owner occupants cannot change permissions.
+- On buyer FINAL death (not downing), leave an intact vehicle in-world and default its access to WorldUnlocked. Store ownership for audit/quota and later owner actions; make this a data policy selectable between KeepOwnershipAndLock and UnlockForEveryone. No refund or free replacement; test both policies.
 - On buyer disconnect: clear their seat/input immediately, retain ownership/lock during a configurable 60-second reconnect grace, then despawn without refund; occupants get safe exits. Cancel cleanup if the authenticated buyer returns. No ownership theft via a new connection ID.
-- Acceptance: owner enters a freshly spawned locked vehicle; teammate is denied until unlock; enemy and forged owner are always denied. Relock, reconnect, late join and disconnect grace replicate consistently. UI shows owner and access state.
+- Acceptance: owner enters a freshly spawned locked vehicle; teammate is denied until unlock; enemy enters only in WorldUnlocked; forged owner requests are always denied. Buyer final death defaults to public access and the alternative policy preserves locks. Relock, reconnect, late join and disconnect grace replicate consistently. UI shows owner and access state.
 
 ### [ ] ECON-18 — Qualified transport income
 Depends on: 17.
@@ -192,14 +194,14 @@ Depends on: 18.
 ### [ ] ECON-20 — Spotting and spot assists
 Depends on: 19.
 
-- Add a functional binocular/recon item with configurable cost, range, line-of-sight validation, mark duration and teammate-visible markers. Respect class rules. No payout for repeatedly marking the same unchanged target.
+- Add a functional binocular/recon item with configurable cost, range, line-of-sight validation, mark duration and teammate-visible markers. Respect unlock and compatibility rules; no selected class gate. No payout for repeatedly marking the same unchanged target.
 - Pay one spotting assist per eligible enemy life when a different teammate confirms a kill within the active mark window; define multiple spotters using one configured shared assist budget.
 - Acceptance: actual enemy is visible/marked to teammates; through-wall, self/friendly and expired marks fail. Kill with a valid mark produces the bounded assist, without turning a client marker into trusted reward evidence.
 
-### [ ] ECON-21 — Engineer construction, resupply and FOB shop foundation
+### [ ] ECON-21 — Construction, resupply and FOB shop foundation
 Depends on: 20.
 
-- Implement the minimal real buildable lifecycle needed for economy: Engineer-only placement, authoritative cost/limits/collision checks, construction progress, damage, repair and destruction. Start with sandbags, ammo crate and FOB beacon; leave other art/content to their existing tasks.
+- Implement the minimal real buildable lifecycle needed for economy: placement gated by owned/unlocked building tools, not a selected Engineer class, authoritative cost/limits/collision checks, construction progress, damage, repair and destruction. Start with sandbags, ammo crate and FOB beacon; leave other art/content to their existing tasks.
 - Construction income pays completed useful work under per-builder/match budgets; never exceed that object's nonrefundable construction spend. No dismantle refund loop. Resupply transfers finite purchased stock into a teammate's actual ammo deficit and pays once for accepted eligible stock, with recipient-life caps.
 - FOB beacon enables a friendly respawn/station only while completed and alive; no vehicle category without a valid pad. Spawn at FOB still follows paid-kit/free-kit rules. Destroyed stations close menus and reject pending purchases.
 - Acceptance: build -> complete -> buy/resupply -> damage/repair -> destroy works across clients. Ghosts, self-resupply, refill loops, friendly damage and repeated construction callbacks cannot print money. Enemy asset destruction pays in proportion to completed construction.
@@ -214,12 +216,12 @@ Depends on: 21.
 ### [ ] ECON-23 — Round transitions, reconnect and cleanup
 Depends on: 22.
 
-- Add complete round start/end/reset integration: freeze spending/rewards at end, cancel uses, trips, revives and pending deliveries, show summary, clear purchased vehicles/inventories/contributions and start new IDs/balances once.
-- Retain current-match wallet/inventory/ownership during authenticated reconnect with bounded server records. Define deterministic outcomes for disconnect during purchase, revive and trip; returning next match receives only that match's grant.
+- Add complete round start/end/reset integration: freeze spending/rewards at end, cancel uses, trips, revives and pending deliveries, show summary, clear match vehicles/inventories/contributions and start new match/life IDs once. Preserve durable account cash and unlock progression.
+- Restore persistent account wallet and progression on authenticated reconnect. Inventory/vehicle reconnect state is current-match only. Define deterministic outcomes for disconnect during purchase, revive and trip; a new match never grants starting cash again.
 - Acceptance: play two consecutive rounds with late join and reconnect; no old event or request can award/debit the new round. No leaked locks/seats/quotas, extra starting funds or retained paid kit after final death.
 
 ### [ ] ECON-24 — Multiplayer abuse and regression verification
-Depends on: 23.
+Depends on: 23, 19F.
 
 - Run EditMode policy/transaction tests, relevant PlayMode regressions and real dedicated-server scenarios with at least three clients (buyer, teammate, enemy), plus a second teammate where passenger capacity needs it.
 - Exercise spoofed rewards/owners/prices, remote shopping, input spam, repeat IDs, packet delay/retry, insufficient funds, blocked pads, failed delivery, owner death/disconnect, late join and round reset.
@@ -229,7 +231,7 @@ Depends on: 23.
 ### [ ] ECON-25 — Balance pass and final Claude handoff
 Depends on: 24.
 
-- Play measured combat, medic, driver and Engineer sessions. Record income/spend per minute, lives funded, reward caps hit and vehicle losses. Tune only editable data; support roles must remain useful and bankruptcy must remain recoverable with the free kit.
+- Play measured combat, medical, driver, builder and pilot sessions. Record income/spend per minute, lives funded, reward caps hit and vehicle losses. Tune only editable data; support roles must remain useful and bankruptcy must remain recoverable with the free kit.
 - Walk the full acceptance scenario below; update GDD/HANDOFF/report and synchronize only completed overlapping tasks in TASKS.md. Record known issues and remaining expansion work.
 - Acceptance: the scenario passes in actual multiplayer, station/menu controls are documented, no supported purchasable item lacks behavior, and the report separates executed checks from pending ones.
 
@@ -238,11 +240,11 @@ Depends on: 24.
 1. Start a round with three factions. At every HQ, a friendly player can reach a station and see their own balance. An enemy cannot shop there.
 2. Buy a rifle and ammo, equip, shoot, reload and exhaust ammunition. Buy and use bandages; buy a parachute and safely descend from the test platform. The purchases change the actual game state.
 3. Damage enemies and earn kill/assist credit; revive/heal teammates and earn support income. Observe correct counts, wallet, ledger and objective bonus. A revive keeps the kit; a final death removes it without resetting cash.
-4. Buy a jeep. Exactly one charge and one delivered vehicle result. It starts locked; the buyer enters, a teammate is denied, and only the buyer can unlock it. After unlock, teammates can ride and enemies remain denied.
+4. Buy a jeep. Exactly one charge and one delivered vehicle result. It starts locked; the buyer enters, a teammate is denied, and only the buyer can unlock it. After unlock, teammates AND enemies can ride; neither can change lock settings. Buyer final death leaves the intact vehicle publicly accessible under the default configurable policy.
 5. Transport distinct teammates from base into the zone; meaningful completed rides pay once. Repair hostile damage with a purchased tool and confirm real restoration plus eligible income.
 6. Spot an enemy for a teammate's kill, build and supply a real FOB, and purchase at its friendly station. Destroy enemy assets and verify bounded payouts.
-7. Repeat failed/duplicate/spoofed purchases and rewards, destroy the purchased jeep, reconnect the owner, then start another round. Money, kits, locks, statistics and match resets remain correct.
+7. Repeat failed/duplicate/spoofed purchases and rewards, destroy the purchased jeep, reconnect the owner, then start another round. Money, kits, locks, statistics and match resets remain correct while cash and unlocks persist. Restart the authority and verify committed balances still exist.
 
 ## Copy/paste starting prompt for Claude
 
-> Read `docs/HANDOFF.md`, `docs/GDD.md`, `docs/TASKS.md`, `docs/reference/wardogs-economy-study.md` and `docs/ECONOMY_TASKS.md`. Execute only the first unfinished ECON task whose dependencies are complete. Mark it busy, preserve local changes, implement and verify its acceptance criteria, update status and handoff, and stop before starting another task. Use data-driven values and server authority. Do not mark simulated multiplayer checks as completed. Begin with ECON-01 if none are complete.
+> Read `docs/START_HERE.md` and follow its implementation prompt. Resume the in-progress task before claiming another. Read DECISIONS.md revision 2 before continuing ECON-02: the original match-only/class-restricted plan is superseded. Execute tasks sequentially, preserve local work, verify acceptance, update status and handoff, commit task-owned changes and continue to the next eligible task when authorized. Do not claim offline checks prove multiplayer behavior.

@@ -60,3 +60,16 @@ As listed in ECONOMY_TASKS.md "Proposed first-pass tuning". These go into data a
 - `Vehicle` has one driver, open entry and a free auto-respawn → ECON-15/16/17. Legacy map vehicles keep their current behavior.
 - `ThirdPersonController.Interact` (E) only handles vehicles → ECON-12 shared interaction routing.
 - `MatchManager` has no reset or economy lifecycle → ECON-23.
+
+## ECON-02 — Data assets and catalog validation (2026-11-19)
+
+Added `Scripts/Runtime/Economy/`: `ItemDefinition`, `VehicleDefinition`, `StationDefinition`, `EconomyConfig` (wallet rules, zone multiplier, catalog, free kit, reward rules), `RewardRule`/`FreeKitEntry`, `ItemBehaviors` (behaviour keys and the set of implemented behaviours) and `CatalogValidator`. `Scripts/Editor/EconomyCatalogBuilder.cs` creates only the missing default assets under `Assets/_Mudfront/Data/Economy/`, so designer edits are never overwritten. It also validates the catalog and writes `economy_catalog_report.md`.
+
+Defaults follow the tuning table. Additions that are not in the table, all Mudfront proposals: free-kit-only `rifle_basic` (25 dmg, same as the old Shooter), `rifle_service` 250, `ammo_pistol` 15 credits per 24 rounds (the sidearm needs ammo), weapon stats, bandage 40 HP over 2.5 s, max stack 3.
+
+Availability: an item is offered only if it is `Purchasable` and its behaviour is in `ItemBehaviors.Implemented`. A vehicle also needs a prefab. The implemented set is empty, so **every product is currently hidden**. ECON-07+ add keys as gameplay lands.
+
+Results:
+- `EconomyCatalogBuilder.BuildAndValidate` (batch): exit 0, **VALID**.
+- Real asset edit `Item_pistol.asset` Price → -5 (no source change), then validate: **exit 1**, error reported. Restored → exit 0. Prices and rewards are editable data.
+- PlayMode: **36/36 passed** (21 baseline + 15 new `EconomyCatalogTests`: duplicate ID, negative price, price > max balance, missing/unknown behaviour, incompatible slot, missing ammo link, stack overflow, capped reward without cap, duplicate reward reason, vehicle without prefab hidden, unimplemented item hidden, free-kit-only never sold, shipped catalog valid with expected prices).
