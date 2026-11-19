@@ -49,7 +49,7 @@ Use integer credits and deterministic rounding after a single zone multiplier. A
 
 ## Ordered tasks
 
-### [ ] ECON-01 — Baseline and implementation contract
+### [~] ECON-01 — Baseline and implementation contract
 Depends on: none.
 
 - Re-read current source and local instructions; capture existing modified files, installed Unity version and actual tests. Identify stable scene/prefab creation paths and record baseline results in `docs/verification/economy_report.md`.
