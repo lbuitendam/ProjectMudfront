@@ -1,0 +1,8 @@
+auth=True:ok
+wallet_initial=acc-a:10000
+tx_mint=Rejected:ClientRewardNotAllowed
+tx_forge=Rejected:ForgedIdentity
+tx_cheap=Rejected:NotAvailable
+wallet_after=10000
+result=PASS
+why=attacker requests all rejected and balance unchanged

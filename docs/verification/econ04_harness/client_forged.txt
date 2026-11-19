@@ -1,0 +1,3 @@
+auth=False:invalid credentials
+result=PASS
+why=auth must fail: invalid credentials

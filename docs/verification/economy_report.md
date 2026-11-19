@@ -190,3 +190,35 @@ Limitations:
 - Regression with 4.7.3: PlayMode **67/67 passed**.
 
 **Remaining for ECON-04:** connection authenticator bound to AccountId; server-owned match/player state; wallet snapshot, transaction result and notification messages; server validation and rate limiting; headless dedicated server build; a real server process + 2 client processes test (isolated wallets, forged identity and direct reward requests rejected).
+
+## ECON-04 — Fish-Net foundation and authority boundary (completed 2026-11-19)
+
+**What was built** (new assembly `Mudfront.Net`, referencing `Mudfront.Runtime` and `FishNet.Runtime`):
+- `AccountAuthenticator` (Fish-Net `Authenticator`): binds each connection to an AccountId only after verifying a token. The dev scheme is HMAC-SHA256(serverSecret, accountId) with a constant-time compare, so a client can't mint a token for another account without the server secret. It refuses a second live session for the same account. Production replaces the verification with a platform ticket check (decision pending, see ECON-03A).
+- `EconomyServer`: owns `PlayerRegistry`, `WalletLedger` and `FileLedgerStore`, the **same domain services used offline**.
+  - Handles `WalletRequest`, `PurchaseRequest` and `RewardClaim`.
+  - `ServerReward()` is the only way money is earned, and it pushes `RewardNotice` plus `WalletSnapshot` to the owning connection only.
+  - Prices come from the catalog; the client's `ClaimedPrice` is never read. A mismatched `ActingAccountId` is rejected as `ForgedIdentity`. Client reward claims are always rejected.
+  - Purchases currently answer `NotAvailable` or `PurchaseServicePending`, because fulfilment arrives in ECON-06/13.
+- `RequestRateLimiter`: per-connection token bucket (10/s, burst 20, kick after 50 violations), reusable for later commands.
+- `EconomyMessages`: wire contract (Auth, Wallet, Purchase, RewardClaim, TxResult, RewardNotice). Clients only send requests.
+- `NetHarnessBootstrap` + `NetHarnessBuilder` (generated scene `Scenes/Net_Harness.unity`, Windows player at `Builds/NetHarness/`, which is git-ignored). Runner: `tools/net/run_econ04_harness.sh`.
+
+**Headless:** the Unity Dedicated Server build module isn't installed. The server runs as the Windows player with `-batchmode -nographics`, and the server log confirms `server_headless=True` (batch mode + Null graphics device). Installing the Dedicated Server module later gives a smaller server binary; the code doesn't change.
+
+**Real multi-process run** (`run_econ04_harness.sh`, 1 server + 4 client processes on localhost, Tugboat UDP; raw results in `econ04_harness/`):
+
+| Process | Result |
+|---|---|
+| Server (headless) | PASS. `server_reward=acc-b:Ok:10150`, `rejected_forged_identity=1`, `rejected_reward_claims=1`, ledger: two seeds of 10,000 plus one acc-b reward of 150, `reconciles=True` |
+| Client A `acc-a` attacker | PASS. Direct reward claim `Rejected:ClientRewardNotAllowed`. Purchase as acc-b `Rejected:ForgedIdentity`. Price -5000 `Rejected:NotAvailable`. Balance stays 10,000 |
+| Client B `acc-b` | PASS. Wallet 10,000 to 10,150 after the server-side reward, 1 notice. A's wallet unaffected, so wallets are isolated |
+| Forged identity (acc-b with acc-a's token) | PASS. `auth=False:invalid credentials` |
+| Duplicate session (valid acc-b while B is connected) | PASS. `auth=False:account already has an active session` |
+
+PlayMode: **69/69 passed** (+2 `RateLimiterTests`: token bucket and dev-token verification).
+
+**Limitations:**
+- Localhost only. No NAT, latency or packet-loss testing; that belongs to ECON-24.
+- Server-owned team assignment and match state beyond MatchId/registry arrive with combat and round tasks (ECON-05/23). No NetworkObjects are spawned yet.
+- The Fish-Net PlayMode code isn't covered by in-editor tests. Multiplayer correctness is proven only by the process harness above.

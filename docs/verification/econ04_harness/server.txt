@@ -1,0 +1,11 @@
+server_headless=True
+server_reward=acc-b:Ok:10150
+rejected_forged_identity=1
+rejected_reward_claims=1
+rate_limited=0
+ledger=acc-b:Seed:10000:10000
+ledger=acc-a:Seed:10000:10000
+ledger=acc-b:Reward:150:10150
+reconciles=True
+result=PASS
+why=server stopped by harness

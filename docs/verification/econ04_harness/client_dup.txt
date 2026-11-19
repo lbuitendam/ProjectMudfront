@@ -1,0 +1,3 @@
+auth=False:account already has an active session
+result=PASS
+why=auth must fail: account already has an active session

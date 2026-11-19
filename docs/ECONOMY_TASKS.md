@@ -88,7 +88,7 @@ Depends on: 03R.
 - Commit debit/delivery intent and reward receipt durably before acknowledging success. Recover interrupted transactions deterministically, refund or finish pending delivery exactly once, and handle storage failure without inventing spendable cash.
 - Acceptance: earn/spend, leave immediately, restart server, reconnect and join a new match: committed balance persists. Duplicate account creation never re-seeds. Crash/retry around commit and simultaneous sessions cannot double-spend; old-match actions remain invalid even though the wallet persists.
 
-### [~] ECON-04 — Fish-Net foundation and authority boundary
+### [x] ECON-04 — Fish-Net foundation and authority boundary
 Depends on: 03A.
 
 - Install and pin Fish-Net following its current official documentation. Record version and setup. Build a minimal dedicated-server + clients scene with connection-bound identity, team assignment and server-owned match/player state.
@@ -96,7 +96,7 @@ Depends on: 03A.
 - Create reusable server validation/rate limiting and a real multi-process test harness. Support offline play through the same domain services.
 - Acceptance: dedicated server + two clients show isolated wallets; forged identity and direct reward requests are rejected. Headless startup works. Mark network-dependent tasks blocked if this cannot run; local service tests do not satisfy this gate.
 
-### [ ] ECON-05 — Combat authority and attribution
+### [~] ECON-05 — Combat authority and attribution
 Depends on: 04.
 
 - Add authoritative damage context: attacker ID/team/life, victim ID/life, source and effective damage. Keep environment damage distinct and avoid attributing vehicles/buildables as infantry kills.

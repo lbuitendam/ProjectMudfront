@@ -1,0 +1,6 @@
+auth=True:ok
+wallet_initial=acc-b:10000
+wallet_after=10150
+reward_notices=1
+result=PASS
+why=server-side reward reached only this wallet

@@ -1,0 +1,1 @@
+{ "name": "Mudfront.Net", "rootNamespace": "Mudfront.Net", "references": ["Mudfront.Runtime", "FishNet.Runtime"], "autoReferenced": true }

@@ -34,3 +34,6 @@ crashlytics-build.properties
 # OS
 Thumbs.db
 .DS_Store
+
+# Player builds (ECON-04 net harness)
+/Builds/
