@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace Mudfront.Economy
 {
-    public enum LedgerKind { Entry, Reward, Purchase, Refund }
+    public enum LedgerKind { Seed, Reward, Purchase, Refund, Unlock }
 
-    public enum TxStatus { Ok, Duplicate, InsufficientFunds, InvalidAmount, UnknownPlayer, Capped, NoActiveMatch }
+    public enum TxStatus { Ok, Duplicate, InsufficientFunds, InvalidAmount, UnknownPlayer, Capped, NoActiveMatch, StaleMatch, StorageFailure }
 
-    /// <summary>Per-match action counters. They are separate from money: caps limit payout, not counts.</summary>
+    /// <summary>Per-match action counters. Separate from money: caps limit payout, not counts.</summary>
     public enum ActionStat
     {
         Kills, Assists, Revives, HpHealed, PassengersDelivered, HpRepaired, ObjectiveSeconds,
-        Constructions, RoundsSupplied, SpotAssists, VehiclesDestroyed, BuildablesDestroyed,
+        Constructions, RoundsSupplied, SpotAssists, VehiclesDestroyed, BuildablesDestroyed, FollowUpKills,
     }
 
     public readonly struct TxResult
@@ -25,173 +25,223 @@ namespace Mudfront.Economy
         public override string ToString() => $"{Status} tx{TxId} {Amount} -> {Balance}";
     }
 
+    [Serializable]
     public class LedgerRecord
     {
         public long TxId;
-        public string EventId;
-        public PlayerId Player;
+        public string Key;        // unique idempotency key (durable)
+        public string AccountId;
         public LedgerKind Kind;
-        public int Code;          // RewardReason for rewards, item/vehicle-neutral code otherwise
+        public int Code;          // RewardReason for rewards
         public int Amount;        // signed: + credit, - debit
         public int BalanceAfter;
+        public int MatchId;
         public string Detail;
     }
 
-    public class WalletState
+    /// <summary>Persistent per-account money (revision 2). Counts are per match.</summary>
+    public class AccountWallet
     {
+        public string AccountId;
         public int Balance;
-        public long Earned;       // rewards + entry + refunds
-        public long Spent;        // purchases
+        public long Earned;       // seed + rewards + refunds
+        public long Spent;        // purchases + unlocks
+        public bool Seeded;
         public readonly Dictionary<RewardReason, long> EarnedByReason = new Dictionary<RewardReason, long>();
-        public readonly Dictionary<ActionStat, long> Stats = new Dictionary<ActionStat, long>();
-        public bool EntryGranted;
+        public readonly Dictionary<ActionStat, long> MatchStats = new Dictionary<ActionStat, long>();
     }
 
-    /// <summary>Authoritative match-only wallets. All mutations take a caller-supplied unique
-    /// event ID; replays return the original result and never change money twice. Integer credits,
-    /// checked arithmetic, ceiling at <see cref="EconomyConfig.MaxBalance"/>.</summary>
+    /// <summary>Durable store behind the ledger (ECON-03A). <see cref="Commit"/> must persist the
+    /// record before returning true; the ledger only acknowledges after that.</summary>
+    public interface ILedgerStore
+    {
+        bool Commit(LedgerRecord record);
+    }
+
+    /// <summary>Authoritative persistent account wallets. Every mutation takes a unique key; replays
+    /// return the original result and never change money twice. Integer credits, checked arithmetic,
+    /// ceiling at <see cref="EconomyConfig.MaxBalance"/>. Rewards and purchases must carry the
+    /// current MatchId so actions from an old match stay invalid although the wallet persists.</summary>
     public class WalletLedger
     {
         readonly EconomyConfig _cfg;
         readonly PlayerRegistry _players;
-        readonly Dictionary<PlayerId, WalletState> _wallets = new Dictionary<PlayerId, WalletState>();
+        readonly ILedgerStore _store;
+        readonly Dictionary<string, AccountWallet> _wallets = new Dictionary<string, AccountWallet>();
         readonly Dictionary<string, TxResult> _seen = new Dictionary<string, TxResult>();
+        readonly Dictionary<string, LedgerRecord> _byKey = new Dictionary<string, LedgerRecord>();
         readonly HashSet<string> _seenStats = new HashSet<string>();
         readonly List<LedgerRecord> _records = new List<LedgerRecord>();
         long _nextTx = 1;
-        int _resetMatch;
 
         public bool RoundActive { get; set; } = true;
         public IReadOnlyList<LedgerRecord> Records => _records;
-        public event Action<PlayerId, LedgerRecord> Changed;
+        public event Action<string, LedgerRecord> Changed;
 
-        public WalletLedger(EconomyConfig cfg, PlayerRegistry players)
+        public WalletLedger(EconomyConfig cfg, PlayerRegistry players, ILedgerStore store = null)
         {
             _cfg = cfg ?? throw new ArgumentNullException(nameof(cfg));
             _players = players ?? throw new ArgumentNullException(nameof(players));
-            _resetMatch = players.MatchId;
-            players.MatchStarted += ResetForMatch;
+            _store = store;
+            players.MatchStarted += _ => { foreach (var w in _wallets.Values) w.MatchStats.Clear(); _seenStats.Clear(); };
         }
 
-        public int Balance(PlayerId p) => _wallets.TryGetValue(p, out var w) ? w.Balance : 0;
-        public WalletState Get(PlayerId p) => _wallets.TryGetValue(p, out var w) ? w : null;
+        public int MatchId => _players.MatchId;
+        public int Balance(PlayerId p) => Get(p)?.Balance ?? 0;
+        public AccountWallet Get(PlayerId p) { var a = _players.AccountOf(p); return a != null && _wallets.TryGetValue(a, out var w) ? w : null; }
+        public AccountWallet GetAccount(string accountId) => accountId != null && _wallets.TryGetValue(accountId, out var w) ? w : null;
 
-        WalletState Wallet(PlayerId p)
+        AccountWallet Wallet(string account)
         {
-            if (!_wallets.TryGetValue(p, out var w)) _wallets[p] = w = new WalletState();
+            if (!_wallets.TryGetValue(account, out var w)) _wallets[account] = w = new AccountWallet { AccountId = account };
             return w;
         }
 
-        /// <summary>Grants the match entry funds once per player per match (also for late joiners).</summary>
-        public TxResult GrantEntry(PlayerId p)
+        /// <summary>Loads committed history (ECON-03A recovery). Rebuilds balances and idempotency.</summary>
+        public void Restore(IEnumerable<LedgerRecord> committed)
         {
-            if (!_players.Contains(p)) return new TxResult(TxStatus.UnknownPlayer, 0, 0, 0);
-            var w = Wallet(p);
-            string key = $"entry:{_players.MatchId}:{p.Value}";
-            if (w.EntryGranted) return _seen.TryGetValue(key, out var prev) ? Dup(prev) : new TxResult(TxStatus.Duplicate, 0, 0, w.Balance);
-            w.EntryGranted = true;
-            return Apply(p, w, key, LedgerKind.Entry, 0, _cfg.MatchEntryGrant, "match entry");
-        }
-
-        /// <summary>Credits a reward. Pays nothing outside an active round.</summary>
-        public TxResult Reward(PlayerId p, RewardReason reason, int amount, string eventId, string detail = null)
-        {
-            if (!RoundActive) return new TxResult(TxStatus.NoActiveMatch, 0, 0, Balance(p));
-            if (reason == RewardReason.MatchEntry) return new TxResult(TxStatus.InvalidAmount, 0, 0, Balance(p));
-            return Credit(p, LedgerKind.Reward, (int)reason, amount, eventId, detail);
-        }
-
-        /// <summary>Refund of a failed purchase; must reference the original purchase event.</summary>
-        public TxResult Refund(PlayerId p, int amount, string purchaseEventId, string detail = null)
-        {
-            string key = PurchaseKey(p, purchaseEventId);
-            if (!_seen.TryGetValue(key, out var buy) || !buy.Ok || amount > -FindAmount(buy.TxId))
-                return new TxResult(TxStatus.InvalidAmount, 0, 0, Balance(p));
-            return Credit(p, LedgerKind.Refund, 0, amount, "refund:" + key, detail);
-        }
-
-        // Purchase request IDs come from clients, so they are namespaced per player and per match:
-        // one player can never collide with or pre-empt another's request.
-        string PurchaseKey(PlayerId p, string requestId) => $"buy:{_players.MatchId}:{p.Value}:{requestId}";
-
-        int FindAmount(long txId)
-        {
-            for (int i = _records.Count - 1; i >= 0; i--) if (_records[i].TxId == txId) return _records[i].Amount;
-            return 0;
-        }
-
-        TxResult Credit(PlayerId p, LedgerKind kind, int code, int amount, string eventId, string detail)
-        {
-            if (!_players.Contains(p)) return new TxResult(TxStatus.UnknownPlayer, 0, 0, 0);
-            if (string.IsNullOrEmpty(eventId) || amount <= 0) return new TxResult(TxStatus.InvalidAmount, 0, 0, Balance(p));
-            if (_seen.TryGetValue(eventId, out var prev)) return Dup(prev);
-            return Apply(p, Wallet(p), eventId, kind, code, amount, detail);
-        }
-
-        /// <summary>Debits for a purchase. Fails with no change when funds are insufficient.</summary>
-        public TxResult Debit(PlayerId p, int amount, string eventId, string detail = null)
-        {
-            if (!_players.Contains(p)) return new TxResult(TxStatus.UnknownPlayer, 0, 0, 0);
-            if (string.IsNullOrEmpty(eventId) || amount < 0) return new TxResult(TxStatus.InvalidAmount, 0, 0, Balance(p));
-            eventId = PurchaseKey(p, eventId);
-            if (_seen.TryGetValue(eventId, out var prev)) return Dup(prev);
-            var w = Wallet(p);
-            if (amount > w.Balance)
+            foreach (var r in committed)
             {
-                var fail = new TxResult(TxStatus.InsufficientFunds, 0, 0, w.Balance);
-                return fail; // not recorded: a later retry with more money may succeed
+                if (_byKey.ContainsKey(r.Key)) continue;
+                var w = Wallet(r.AccountId);
+                ApplyToWallet(w, r);
+                r.BalanceAfter = w.Balance;
+                Remember(r, r.Amount > 0 && r.Kind != LedgerKind.Purchase ? TxStatus.Ok : TxStatus.Ok);
+                if (r.TxId >= _nextTx) _nextTx = r.TxId + 1;
             }
-            return Apply(p, w, eventId, LedgerKind.Purchase, 0, -amount, detail);
         }
 
-        TxResult Apply(PlayerId p, WalletState w, string eventId, LedgerKind kind, int code, int delta, string detail)
+        /// <summary>Credits the one-time account seed. Never repeats for the same account.</summary>
+        public TxResult GrantSeed(PlayerId p)
+        {
+            var acct = _players.AccountOf(p);
+            if (acct == null) return new TxResult(TxStatus.UnknownPlayer, 0, 0, 0);
+            return Credit(acct, LedgerKind.Seed, (int)RewardReason.AccountSeed, _cfg.AccountSeedGrant, "seed:" + acct, "account seed", allowZero: true);
+        }
+
+        /// <summary>Credits a reward for an action in match <paramref name="matchId"/>. Pays nothing
+        /// outside an active round or for an old match.</summary>
+        public TxResult Reward(PlayerId p, RewardReason reason, int amount, int matchId, string eventId, string detail = null)
+        {
+            var acct = _players.AccountOf(p);
+            if (acct == null) return new TxResult(TxStatus.UnknownPlayer, 0, 0, 0);
+            if (matchId != MatchId) return new TxResult(TxStatus.StaleMatch, 0, 0, Balance(p));
+            if (!RoundActive) return new TxResult(TxStatus.NoActiveMatch, 0, 0, Balance(p));
+            if (reason == RewardReason.AccountSeed || string.IsNullOrEmpty(eventId)) return new TxResult(TxStatus.InvalidAmount, 0, 0, Balance(p));
+            return Credit(acct, LedgerKind.Reward, (int)reason, amount, $"rw:{matchId}:{eventId}", detail);
+        }
+
+        /// <summary>Debits for a purchase or unlock. Fails with no change when funds are insufficient.
+        /// Client request IDs are namespaced per account and match.</summary>
+        public TxResult Debit(PlayerId p, int amount, int matchId, string requestId, string detail = null, LedgerKind kind = LedgerKind.Purchase)
+        {
+            var acct = _players.AccountOf(p);
+            if (acct == null) return new TxResult(TxStatus.UnknownPlayer, 0, 0, 0);
+            if (matchId != MatchId) return new TxResult(TxStatus.StaleMatch, 0, 0, Balance(p));
+            if (string.IsNullOrEmpty(requestId) || amount < 0 || (kind != LedgerKind.Purchase && kind != LedgerKind.Unlock))
+                return new TxResult(TxStatus.InvalidAmount, 0, 0, Balance(p));
+            string key = PurchaseKey(acct, matchId, requestId);
+            if (_seen.TryGetValue(key, out var prev)) return Dup(prev);
+            var w = Wallet(acct);
+            if (amount > w.Balance) return new TxResult(TxStatus.InsufficientFunds, 0, 0, w.Balance); // not remembered: may retry
+            return Apply(w, key, kind, 0, -amount, matchId, detail);
+        }
+
+        /// <summary>Refund of a failed purchase; must reference a real successful purchase, at most its amount, once.</summary>
+        public TxResult Refund(PlayerId p, int amount, int matchId, string requestId, string detail = null)
+        {
+            var acct = _players.AccountOf(p);
+            if (acct == null) return new TxResult(TxStatus.UnknownPlayer, 0, 0, 0);
+            return RefundByKey(acct, PurchaseKey(acct, matchId, requestId), amount, detail);
+        }
+
+        /// <summary>Recovery path: refund an outstanding purchase by its durable key (no live session needed).</summary>
+        public TxResult RefundByKey(string account, string purchaseKey, int amount, string detail = null)
+        {
+            if (!_byKey.TryGetValue(purchaseKey, out var buy) || buy.AccountId != account || buy.Kind == LedgerKind.Refund || amount > -buy.Amount)
+                return new TxResult(TxStatus.InvalidAmount, 0, 0, GetAccount(account)?.Balance ?? 0);
+            return Credit(account, LedgerKind.Refund, 0, amount, "refund:" + purchaseKey, detail, matchId: buy.MatchId);
+        }
+
+        public static string PurchaseKey(string account, int matchId, string requestId) => $"buy:{account}:{matchId}:{requestId}";
+
+        TxResult Credit(string acct, LedgerKind kind, int code, int amount, string key, string detail, bool allowZero = false, int matchId = -1)
+        {
+            int bal = GetAccount(acct)?.Balance ?? 0;
+            if (amount < 0 || (amount == 0 && !allowZero)) return new TxResult(TxStatus.InvalidAmount, 0, 0, bal);
+            if (_seen.TryGetValue(key, out var prev)) return Dup(prev);
+            return Apply(Wallet(acct), key, kind, code, amount, matchId < 0 ? MatchId : matchId, detail);
+        }
+
+        TxResult Apply(AccountWallet w, string key, LedgerKind kind, int code, int delta, int matchId, string detail)
         {
             var status = TxStatus.Ok;
             if (delta > 0)
             {
                 long room = (long)_cfg.MaxBalance - w.Balance;
-                if (room <= 0) { var c = new TxResult(TxStatus.Capped, 0, 0, w.Balance); _seen[eventId] = c; return c; }
-                if (delta > room) { delta = (int)room; status = TxStatus.Capped; }
+                if (room <= 0) { delta = 0; status = TxStatus.Capped; }
+                else if (delta > room) { delta = (int)room; status = TxStatus.Capped; }
+                if (delta == 0 && kind != LedgerKind.Seed) { var c = new TxResult(TxStatus.Capped, 0, 0, w.Balance); _seen[key] = c; return c; }
             }
+            var rec = new LedgerRecord { TxId = _nextTx, Key = key, AccountId = w.AccountId, Kind = kind, Code = code, Amount = delta, MatchId = matchId, Detail = detail };
+            checked { rec.BalanceAfter = w.Balance + delta; }
+            // Durable before acknowledged: a failed write changes nothing and is not remembered.
+            if (_store != null && !_store.Commit(rec)) return new TxResult(TxStatus.StorageFailure, 0, 0, w.Balance);
+            _nextTx++;
+            ApplyToWallet(w, rec);
+            var res = Remember(rec, status);
+            Changed?.Invoke(w.AccountId, rec);
+            return res;
+        }
+
+        static void ApplyToWallet(AccountWallet w, LedgerRecord r)
+        {
             checked
             {
-                w.Balance += delta;
-                if (delta > 0) w.Earned += delta; else w.Spent += -delta;
+                w.Balance += r.Amount;
+                if (r.Amount > 0) w.Earned += r.Amount; else w.Spent += -r.Amount;
             }
-            if (kind == LedgerKind.Reward)
+            if (r.Kind == LedgerKind.Seed) w.Seeded = true;
+            if (r.Kind == LedgerKind.Reward)
             {
-                var r = (RewardReason)code;
-                w.EarnedByReason.TryGetValue(r, out var e);
-                w.EarnedByReason[r] = e + delta;
+                var reason = (RewardReason)r.Code;
+                w.EarnedByReason.TryGetValue(reason, out var e);
+                w.EarnedByReason[reason] = e + r.Amount;
             }
-            var rec = new LedgerRecord { TxId = _nextTx++, EventId = eventId, Player = p, Kind = kind, Code = code, Amount = delta, BalanceAfter = w.Balance, Detail = detail };
-            _records.Add(rec);
-            var res = new TxResult(status, rec.TxId, delta, w.Balance);
-            _seen[eventId] = res;
-            Changed?.Invoke(p, rec);
+        }
+
+        TxResult Remember(LedgerRecord r, TxStatus status)
+        {
+            _records.Add(r);
+            _byKey[r.Key] = r;
+            var res = new TxResult(status, r.TxId, r.Amount, r.BalanceAfter);
+            _seen[r.Key] = res;
             return res;
         }
 
         static TxResult Dup(TxResult prev) => new TxResult(TxStatus.Duplicate, prev.TxId, prev.Amount, prev.Balance);
 
-        /// <summary>Counts a valid action once per event ID. Independent of whether it paid.</summary>
+        public bool HasRecord(string key) => _byKey.ContainsKey(key);
+
+        /// <summary>Counts a valid action once per event ID in the current match. Independent of payout.</summary>
         public bool RecordStat(PlayerId p, ActionStat stat, long count, string eventId)
         {
-            if (!_players.Contains(p) || count <= 0 || string.IsNullOrEmpty(eventId)) return false;
-            if (!_seenStats.Add("stat:" + eventId)) return false;
-            var w = Wallet(p);
-            w.Stats.TryGetValue(stat, out var v);
-            w.Stats[stat] = checked(v + count);
+            var acct = _players.AccountOf(p);
+            if (acct == null || count <= 0 || string.IsNullOrEmpty(eventId)) return false;
+            if (!_seenStats.Add($"stat:{MatchId}:{eventId}")) return false;
+            var w = Wallet(acct);
+            w.MatchStats.TryGetValue(stat, out var v);
+            w.MatchStats[stat] = checked(v + count);
             return true;
         }
 
-        public long Stat(PlayerId p, ActionStat s) => _wallets.TryGetValue(p, out var w) && w.Stats.TryGetValue(s, out var v) ? v : 0;
+        public long Stat(PlayerId p, ActionStat s) { var w = Get(p); return w != null && w.MatchStats.TryGetValue(s, out var v) ? v : 0; }
 
         /// <summary>True when every wallet equals the sum of its ledger records and earned - spent.</summary>
         public bool Reconciles(out string problem)
         {
-            var sums = new Dictionary<PlayerId, long>();
-            foreach (var r in _records) { sums.TryGetValue(r.Player, out var s); sums[r.Player] = s + r.Amount; }
+            var sums = new Dictionary<string, long>();
+            foreach (var r in _records) { sums.TryGetValue(r.AccountId, out var s); sums[r.AccountId] = s + r.Amount; }
             foreach (var kv in _wallets)
             {
                 sums.TryGetValue(kv.Key, out var s);
@@ -200,17 +250,6 @@ namespace Mudfront.Economy
             }
             problem = null;
             return true;
-        }
-
-        /// <summary>Clears all match-only money, records and replay protection exactly once per match.</summary>
-        void ResetForMatch(int matchId)
-        {
-            if (matchId == _resetMatch) return;
-            _resetMatch = matchId;
-            _wallets.Clear();
-            _seen.Clear();
-            _seenStats.Clear();
-            _records.Clear();
         }
     }
 }

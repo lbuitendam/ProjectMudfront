@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e872c023d5299741a63e163ae75de2e, type: 3}
+  m_Name: Vehicle_heli_armed
+  m_EditorClassIdentifier: Mudfront.Runtime::Mudfront.Economy.VehicleDefinition
+  Id: heli_armed
+  DisplayName: Armed Transport Helicopter
+  Kind: 1
+  Price: 4000
+  BehaviorId: vehicle.heli_armed
+  Prefab: {fileID: 0}
+  UnlockTrack: 6
+  UnlockXp: 300
+  UnlockFee: 3000
+  MaxHealth: 600
+  Seats: 6
+  GunnerSeats: 2
+  InitialLock: 0
+  AbandonDespawnTime: 120
+  MaxAlivePerBuyer: 1
+  FuelCapacity: 100
+  FuelBurnPerSecond: 0.5
+  FuelPricePerUnit: 0.5
+  GunDamage: 18
+  GunFireRate: 10
+  GunAmmoCapacity: 400
+  RocketCount: 0
+  RocketDamage: 0
+  RocketBlastRadius: 0
+  AmmoPricePerRound: 1
+  RocketPrice: 0
+  FlareCount: 6
+  FlareCooldown: 8
+  FlarePrice: 25

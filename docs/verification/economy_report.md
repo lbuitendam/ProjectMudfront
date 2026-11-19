@@ -93,3 +93,39 @@ Added `PlayerRegistry` and `WalletLedger` (pure C#, no MonoBehaviour, so offline
 - **Lifecycle:** the entry grant is paid once per match, and late joiners get it when they join. Wallets, records and replay sets reset exactly once per new MatchId. Replay records live for the whole match; protection against stale requests from a previous match is enforced by the network layer in ECON-04.
 
 Results: PlayMode **50/50 passed** (36 previous + 14 new `WalletLedgerTests`: entry once, duplicate reward/debit, insufficient funds, negative/zero/forged entry amounts, overflow clamp, separate same-team wallets with colliding request IDs, refund rules, stat dedupe, no payout outside round, late join + new-match reset, reconnect keeps identity/balance, forged/stale token rejected, life ID uniqueness).
+
+## Contract amendment — DECISIONS.md revision 2 (2026-11-19, ECON-03R)
+
+The ECON-01 "Implementation contract" above is **superseded** where it conflicts:
+- **Persistence:** money is persistent per **account**. A one-time `AccountSeedGrant` (10,000) is paid at account creation. There is no match, death or respawn grant, and no wallet reset on a new match. Only per-match action statistics reset.
+- **Identity:** `PlayerRegistry.Join(authenticatedAccountId)` binds an AccountId to a stable PlayerId. A reconnect with the same account gets the same PlayerId, and a second simultaneous session is refused. The ECON-03 reconnect tokens are removed; identity comes from authentication (ECON-03A/04). MatchId and LifeId are kept for validating actions.
+- **Stale actions:** rewards and debits carry the MatchId and are rejected (`StaleMatch`) if it isn't the current match. The wallet persists, but old-match actions don't.
+- **Roles:** there are no class gates; `ClassMask`/`AllowedClasses` are removed. Items and vehicles have `UnlockTrack` + `UnlockXp` + `UnlockFee`. The fee is debited as `LedgerKind.Unlock`. Starter gear must have no unlock.
+- **Trader starter kit:** the free kit is claimed at a trader once per life. It is not granted automatically.
+- **Vehicles:** `VehicleLockMode {OwnerOnly, WorldUnlocked}`; WorldUnlocked admits enemies too. `OwnerFinalDeathPolicy` (default `UnlockForEveryone`, configurable to `RetainOwnerLock`). `OwnerDisconnectGrace` is 60 s.
+- **Follow-up rewards:** `FollowUpKill` pays 25 within a 120 s window, capped at 150 per provider/recipient life, plus a 150 `SharedCap` across all providers.
+
+## ECON-03R — Reconcile completed data/wallet work with revision 2 (2026-11-19)
+
+The existing systems were migrated in place; nothing was rebuilt alongside them.
+- **Data:** `EconomyConfig` has `DataVersion` (current 2), `AccountSeedGrant`, the vehicle lock/death/disconnect policies and `BasicReviveSeconds`.
+  - New categories and slots: Armour, Grenade, Attachment.
+  - New behaviour keys: large medkit, build tool, armour, frag/smoke grenade, attachment, and three helicopter variants.
+  - Item fields for armour, grenade, attachment, medkit charges and revive multiplier. Vehicle fields for kind, gunner seats, fuel, mounted gun, rockets and flares, with prices for each.
+  - `RewardRule` gains `SharedCap` and an XP track/amount.
+- **Validator:** checks every new field: unlock consistency, per-category parameters, helicopter fuel and flares, armed and attack weapon requirements, follow-up window/caps, outdated DataVersion, and that starter gear has no unlock.
+- **Builder:** now *migrates* the existing assets. It adds missing defaults to lists, sets the seed to 10,000 and DataVersion to 2, and adds XP to existing reward rules, without overwriting edited values.
+  - New proposed defaults: `armour_vest` 200; `grenade_frag` 75 (Assault 100 XP + 300); `grenade_smoke` 50; `scope_rifle` 120 (Recon 100 XP + 300); `extmag_rifle` 100; `medkit_large` 300 (Medical 200 XP + 1,000, 3 charges, revive x0.4); `build_tool` 250 (Support 200 XP + 1,000).
+  - Helicopters: `heli_transport` 2,500 (Pilot 0 XP + 2,000), `heli_armed` 4,000 (Pilot 300 XP + 3,000), `heli_attack` 6,000 (Pilot 800 XP + 5,000).
+  - Fuel 0.5 per unit, mounted rounds 1, rockets 40, flares 25. There is also a new `hq_helipad` station.
+  - All are tuning data, and **all products remain hidden** (no behaviour is implemented yet).
+- **Ledger:** match reset and per-match grant removed. Wallets are keyed by AccountId. The seed is paid once per account. Purchase keys are `buy:{account}:{match}:{request}`. `LedgerKind.Unlock` is new. An `ILedgerStore` hook commits each record before it is acknowledged (a failed write returns `StorageFailure` and changes nothing), and `Restore()` rebuilds state from it for ECON-03A.
+- **Tests:** ECON-03 tests rewritten. They now prove that a new match preserves the balance, the seed can't repeat, old-match actions are rejected, unlock fees count as spending, a second session is refused, and the earlier properties still hold. Catalog tests were added for every new rule. The shipped catalog has an item in every category, the three helicopter kinds, the default policies and follow-up values, and **no `AllowedClasses` field**, so the old behaviour is explicitly superseded.
+
+Results:
+- `BuildAndValidate`: exit 0, **VALID**. The migrated asset has `DataVersion: 2`, `AccountSeedGrant: 10000` and `MaxBalance: 10000000`.
+- PlayMode: **57/57 passed** (21 baseline + 20 catalog + 16 ledger).
+
+Limitations:
+- Older item assets still have an orphan `AllowedClasses` line in their YAML. Unity ignores it and drops it the next time it reserializes the asset.
+- The Pilot track has no XP source yet; ECON-19F adds pilot XP. The transport helicopter needs 0 XP so it can be unlocked.

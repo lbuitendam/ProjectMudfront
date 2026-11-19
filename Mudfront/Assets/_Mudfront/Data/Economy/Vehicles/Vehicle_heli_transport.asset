@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e872c023d5299741a63e163ae75de2e, type: 3}
+  m_Name: Vehicle_heli_transport
+  m_EditorClassIdentifier: Mudfront.Runtime::Mudfront.Economy.VehicleDefinition
+  Id: heli_transport
+  DisplayName: Transport Helicopter
+  Kind: 1
+  Price: 2500
+  BehaviorId: vehicle.heli_transport
+  Prefab: {fileID: 0}
+  UnlockTrack: 6
+  UnlockXp: 0
+  UnlockFee: 2000
+  MaxHealth: 500
+  Seats: 6
+  GunnerSeats: 0
+  InitialLock: 0
+  AbandonDespawnTime: 120
+  MaxAlivePerBuyer: 1
+  FuelCapacity: 100
+  FuelBurnPerSecond: 0.5
+  FuelPricePerUnit: 0.5
+  GunDamage: 0
+  GunFireRate: 0
+  GunAmmoCapacity: 0
+  RocketCount: 0
+  RocketDamage: 0
+  RocketBlastRadius: 0
+  AmmoPricePerRound: 0
+  RocketPrice: 0
+  FlareCount: 6
+  FlareCooldown: 8
+  FlarePrice: 25

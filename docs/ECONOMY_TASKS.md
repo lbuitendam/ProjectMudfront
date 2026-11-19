@@ -72,7 +72,7 @@ Depends on: 02.
 - Grant 10,000 once at account creation. Keep account balance and durable idempotency records across matches; reset match/life statistics only. Bind reconnects to account identity; never trust an arbitrary client-supplied identity.
 - Acceptance: new match entry never resets the wallet or repeats the initial grant. Duplicate grants/rewards/debits, insufficient funds, negative amounts and overflow cannot change money incorrectly. Two players on the same team have separate wallets. Statistics and money reconcile.
 
-### [ ] ECON-03R — Reconcile completed data/wallet work with revision 2
+### [x] ECON-03R — Reconcile completed data/wallet work with revision 2
 Depends on: 03.
 
 - Review the implementation and evidence from completed ECON-02/03; their original match-only/class-gated acceptance does not prove revision 2. Keep their completed historical status and migrate their code/data rather than duplicating systems.
@@ -80,7 +80,7 @@ Depends on: 03.
 - Amend outdated implementation contracts and tests; preserve unrelated gameplay and another worker's in-progress Fish-Net work. Coordinate sequentially before editing overlapping files.
 - Acceptance: updated data/ledger tests prove a new match preserves balance, seed grants cannot repeat, all specialist categories can be represented without class restrictions, and legacy behavior is explicitly superseded. Do not advance ECON-04 acceptance until this task and ECON-03A pass.
 
-### [ ] ECON-03A — Durable account wallet and recovery
+### [~] ECON-03A — Durable account wallet and recovery
 Depends on: 03R.
 
 - Implement an account repository with atomic durable transactions, account/ledger schema versions, unique idempotency keys and one-time seed grant. Bind PlayerId to persistent AccountId; retain MatchId/LifeId for activity validation.

@@ -14,10 +14,15 @@ namespace Mudfront.Economy
         public bool ZoneBonusEligible;
         public CapScope CapScope = CapScope.None;
         public int Cap;
+        [UnityEngine.Tooltip("Budget shared by all providers for one recipient life (follow-up kills). 0 = none.")]
+        public int SharedCap;
         public float WindowSeconds;
         public float IntervalSeconds;
         public float MinDistance;
         public float MinSeconds;
+        [UnityEngine.Tooltip("Role XP awarded per qualifying action, on this track.")]
+        public UnlockTrack XpTrack = UnlockTrack.None;
+        public int Xp;
     }
 
     [Serializable]

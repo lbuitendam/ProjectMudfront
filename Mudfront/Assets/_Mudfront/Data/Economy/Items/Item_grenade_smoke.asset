@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f11fae78fded9b742802b822c0088754, type: 3}
+  m_Name: Item_grenade_smoke
+  m_EditorClassIdentifier: Mudfront.Runtime::Mudfront.Economy.ItemDefinition
+  Id: grenade_smoke
+  DisplayName: Smoke Grenade
+  Category: 6
+  Slot: 6
+  UnlockTrack: 0
+  UnlockXp: 0
+  UnlockFee: 0
+  Purchasable: 1
+  Price: 50
+  QuantityPerPurchase: 1
+  MaxStack: 2
+  BehaviorId: grenade.smoke
+  Prefab: {fileID: 0}
+  Damage: 0
+  FireRate: 0
+  Range: 0
+  MagazineSize: 0
+  ReloadTime: 0
+  AmmoItemId: 
+  Spread: 1
+  UseDuration: 0
+  EffectAmount: 0
+  EffectRange: 0
+  Charges: 1
+  ReviveTimeMultiplier: 1
+  DamageReduction: 0
+  Durability: 0
+  FuseTime: 1.5
+  BlastRadius: 7
+  BlastDamage: 0
+  EffectDuration: 20
+  CompatibleWeaponIds: []
+  SpreadMultiplier: 1
+  ZoomMultiplier: 1
+  MagazineBonus: 0

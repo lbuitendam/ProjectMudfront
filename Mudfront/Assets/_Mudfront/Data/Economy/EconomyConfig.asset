@@ -12,9 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e26c45712b2fceb498853038c899ac9a, type: 3}
   m_Name: EconomyConfig
   m_EditorClassIdentifier: Mudfront.Runtime::Mudfront.Economy.EconomyConfig
-  MatchEntryGrant: 1000
-  MaxBalance: 1000000
+  DataVersion: 2
+  AccountSeedGrant: 10000
+  MaxBalance: 10000000
   ZoneMultiplier: 1.5
+  OwnerFinalDeath: 0
+  OwnerDisconnectGrace: 60
+  BasicReviveSeconds: 8
   Items:
   - {fileID: 11400000, guid: 3c00d8c646634974c9986cccf1ff74f6, type: 2}
   - {fileID: 11400000, guid: 0831fe79b5bc7c245bdb2f438748ce7e, type: 2}
@@ -24,11 +28,22 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3b89313776e1af34f9329ed04d054e3f, type: 2}
   - {fileID: 11400000, guid: 574ee998c51676a4c89a8ce97f6e1801, type: 2}
   - {fileID: 11400000, guid: 23f0d6fa401bc394bad9c5503fa70b6b, type: 2}
+  - {fileID: 11400000, guid: eb083ee929c45874fa29058282f21df3, type: 2}
+  - {fileID: 11400000, guid: 8cb4ce65ba5235440a8ae18eff8c78f4, type: 2}
+  - {fileID: 11400000, guid: 8ae6ea40a1e97984682c66b581e5d5ce, type: 2}
+  - {fileID: 11400000, guid: 350cdffcc3db2e9488b14b4254efc0a8, type: 2}
+  - {fileID: 11400000, guid: 5f3de77ca86598642b0968499fceb677, type: 2}
+  - {fileID: 11400000, guid: 3d9aeca207459eb48b4b899e2786b774, type: 2}
+  - {fileID: 11400000, guid: 99cbaea52b3a88747a87f316f079edf8, type: 2}
   Vehicles:
   - {fileID: 11400000, guid: 85eeb9d633e5b764bbdb74a1a484c830, type: 2}
+  - {fileID: 11400000, guid: b11a2883f3916df4399c278f10834931, type: 2}
+  - {fileID: 11400000, guid: aa46b589616dc0044828f9480c02133a, type: 2}
+  - {fileID: 11400000, guid: 9c1c49d2faf4453449a23b590774e819, type: 2}
   Stations:
   - {fileID: 11400000, guid: 548ca22a04b6a3146bb4eed4b0e6536c, type: 2}
   - {fileID: 11400000, guid: 418188ddef4ed5248842eb98dc479f32, type: 2}
+  - {fileID: 11400000, guid: 4ac84e57697c3224fab281e5ccff19ca, type: 2}
   FreeKit:
   - Item: {fileID: 11400000, guid: 3c00d8c646634974c9986cccf1ff74f6, type: 2}
     Quantity: 1
@@ -41,117 +56,166 @@ MonoBehaviour:
     ZoneBonusEligible: 1
     CapScope: 2
     Cap: 150
+    SharedCap: 0
     WindowSeconds: 0
     IntervalSeconds: 0
     MinDistance: 0
     MinSeconds: 0
+    XpTrack: 1
+    Xp: 10
   - Reason: 11
     Amount: 75
     PerUnit: 0
     ZoneBonusEligible: 1
     CapScope: 2
     Cap: 75
+    SharedCap: 0
     WindowSeconds: 15
     IntervalSeconds: 0
     MinDistance: 0
     MinSeconds: 0
+    XpTrack: 1
+    Xp: 5
   - Reason: 20
     Amount: 150
     PerUnit: 0
     ZoneBonusEligible: 1
     CapScope: 1
     Cap: 150
+    SharedCap: 0
     WindowSeconds: 0
     IntervalSeconds: 0
     MinDistance: 0
     MinSeconds: 0
+    XpTrack: 3
+    Xp: 20
   - Reason: 21
     Amount: 1
     PerUnit: 1
     ZoneBonusEligible: 1
     CapScope: 3
     Cap: 100
+    SharedCap: 0
     WindowSeconds: 0
     IntervalSeconds: 0
     MinDistance: 0
     MinSeconds: 0
+    XpTrack: 3
+    Xp: 1
   - Reason: 30
     Amount: 20
     PerUnit: 0
     ZoneBonusEligible: 0
     CapScope: 0
     Cap: 0
+    SharedCap: 0
     WindowSeconds: 0
     IntervalSeconds: 10
     MinDistance: 0
     MinSeconds: 0
+    XpTrack: 1
+    Xp: 2
   - Reason: 40
     Amount: 100
     PerUnit: 0
     ZoneBonusEligible: 0
     CapScope: 1
     Cap: 100
+    SharedCap: 0
     WindowSeconds: 0
     IntervalSeconds: 0
     MinDistance: 75
     MinSeconds: 10
+    XpTrack: 5
+    Xp: 15
   - Reason: 50
     Amount: 1
     PerUnit: 1
     ZoneBonusEligible: 1
     CapScope: 4
     Cap: 150
+    SharedCap: 0
     WindowSeconds: 0
     IntervalSeconds: 0
     MinDistance: 0
     MinSeconds: 0
+    XpTrack: 4
+    Xp: 1
   - Reason: 60
     Amount: 50
     PerUnit: 0
     ZoneBonusEligible: 1
     CapScope: 0
     Cap: 0
+    SharedCap: 0
     WindowSeconds: 15
     IntervalSeconds: 0
     MinDistance: 0
     MinSeconds: 0
+    XpTrack: 2
+    Xp: 10
   - Reason: 70
     Amount: 50
     PerUnit: 0
     ZoneBonusEligible: 1
     CapScope: 0
     Cap: 0
+    SharedCap: 0
     WindowSeconds: 0
     IntervalSeconds: 0
     MinDistance: 0
     MinSeconds: 0
+    XpTrack: 4
+    Xp: 10
   - Reason: 71
     Amount: 1
     PerUnit: 1
     ZoneBonusEligible: 1
     CapScope: 3
     Cap: 60
+    SharedCap: 0
     WindowSeconds: 0
     IntervalSeconds: 0
     MinDistance: 0
     MinSeconds: 0
+    XpTrack: 4
+    Xp: 1
   - Reason: 80
     Amount: 200
     PerUnit: 0
     ZoneBonusEligible: 1
     CapScope: 4
     Cap: 200
+    SharedCap: 0
     WindowSeconds: 0
     IntervalSeconds: 0
     MinDistance: 0
     MinSeconds: 0
+    XpTrack: 1
+    Xp: 20
   - Reason: 81
     Amount: 50
     PerUnit: 0
     ZoneBonusEligible: 1
     CapScope: 4
     Cap: 50
+    SharedCap: 0
     WindowSeconds: 0
     IntervalSeconds: 0
     MinDistance: 0
     MinSeconds: 0
+    XpTrack: 1
+    Xp: 5
+  - Reason: 41
+    Amount: 25
+    PerUnit: 0
+    ZoneBonusEligible: 0
+    CapScope: 6
+    Cap: 150
+    SharedCap: 150
+    WindowSeconds: 120
+    IntervalSeconds: 0
+    MinDistance: 0
+    MinSeconds: 0
+    XpTrack: 0
+    Xp: 0
